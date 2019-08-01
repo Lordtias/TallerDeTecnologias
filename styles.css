@@ -1,0 +1,18 @@
+section{
+    padding: 8px;
+    width: 80%;
+}
+
+#mapid { 
+    height: 400px; 
+}
+
+img {
+    max-width: 100%;
+}
+
+.container {
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
