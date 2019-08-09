@@ -1,129 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    
+    <title>Quelotines</title>
 
-<head>
-       <meta charset="UTF-8">
-       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       <meta http-equiv="X-UA-Compatible" content="ie=edge">
-       <title></title>
-       <script src="https://code.jquery.com/jquery-3.4.1.min.js"
-              integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous">
+    <!--JQUERY-->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"
+    ></script>
+
+    <!--Onsenui-->
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css" />
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css"/>
+    <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+
+    <!--Hoja de estilo Local-->
+    <link rel="stylesheet" href="styles.css" />
+    <!--JS local-->
+    <script src="functions.js"></script>
+    <!--Base SQLITE local-->
+    <script src="db.js"></script>
+
+  </head>
+
+  <body>
+
+    <ons-modal direction="up" id="modal_cargando">
+      <div style="text-align: center">
+        <p>
+          <ons-icon icon="md-spinner" size="28px" spin></ons-icon>
+          <span id="spn_cargando"></span>
+        </p>
+      </div>
+    </ons-modal>
+
+    <ons-splitter>
+
+      <ons-splitter-side id="menu" side="left" width="220px" collapse swipeable>
+        <ons-page>
+          <ons-list>
+            <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
+              Alquiler de monopatin
+            </ons-list-item>
+            <ons-list-item onclick="fn.load('t_mensajes')" tappable>
+              Metodos de Pago
+            </ons-list-item>
+            <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
+              Historico de Viajes
+            </ons-list-item>
+            <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
+              Cerrar Sesion
+            </ons-list-item>
+          </ons-list>
+        </ons-page>
+      </ons-splitter-side>
+
+      <ons-splitter-content id="content">
+              <ons-navigator animation="fade" page="t_login" id="nav"></ons-navigator>
+       </ons-splitter-content>
+
+    </ons-splitter>
+    
+    <!---------------------------------------------------------------------------------------------------->
+    <template id="t_registro">
+      <ons-page id="p_registro">
+        <section>
+          <h1>Registro de Usuario</h1>
+          <label for="inp_usuario">Usuario:</label>
+          <p>
+            <input class="text-input text-input--material" type="text" id="inp_usuario" placeholder="Ingrese usuario"/>
+          </p>
+          <label for="inp_pwd">Password</label>
+          <p>
+            <input class="text-input text-input--material" type="password" id="inp_pwd" placeholder="Ingrese contrase&ntilde;a"/>
+          </p>
+          <p><ons-button id="btn_registrar_usu">Registrarse</ons-button></p>
+        </section>
+      </ons-page>
+    </template>
+    
+    <!---------------------------------------------------------------------------------------------------->
+    <template id="t_login">
+      <ons-page id="p_login">
+        <section>
+          <h1>Login de Usuario</h1>
+          <label for="inp_login_usuario"></label>
+          <p>
+            <input  class="text-input text-input--material" type="text" id="inp_login_usuario" placeholder="Ingrese usuario"/>
+          </p>
+          <label for="inp_login_pwd"></label>
+          <p>
+            <input class="text-input text-input--material" type="password" id="inp_login_pwd" placeholder="Ingrese contrase&ntilde;a"/>
+          </p>
+          <p><ons-button id="btn_login">Ingresar</ons-button>
+            <ons-button modifier="outline" id="btn_registrar">Registrarse</ons-button></p>
+        </section>
+      </ons-page>
+
+    <!---------------------------------------------------------------------------------------------------->
+    </template>
+    <template id="t_principal">
+      <ons-page id="p_principal">
+        <ons-toolbar>
+          <div class="left">
+            <ons-toolbar-button icon="fa-bars" onclick="fn.open()"></ons-toolbar-button>
+          </div>
+        </ons-toolbar>
+        <section>
+          <h1>Listado de usuarios</h1>
+          <p id="saludo" style="text-align:right"></p>
+          <ons-list id="l_principal"></ons-list>
+        </section>
+        <!--https://onsen.io/v2/guide/lifecycle.html-->
+        <script>
+          ons.getScriptPage().onShow = function() {
+            var usuario = sessionStorage.getItem("usuario");
+            //vuelvo a convertir a objeto
+            usuario = JSON.parse(usuario);
+            $("#saludo").html("Hola <strong>" + usuario.nombre + "</strong>!");
+            listado_usuarios();
+            if(this.data){
+              var mensaje = this.data.mensaje;
+              if (mensaje) {
+                     ons.notification.toast(mensaje, { timeout: 3000 });
+              }
+            }
+            
+          };
+          ons.getScriptPage().onInit = function() {
+            $(document).on("click", ".dato_usuario", function() {
+              var id_usuario = $(this).data("id");
+              var mytor = document.getElementById("nav");
+              mytor.pushPage("t_info_usuario", { data: { id: id_usuario } });
+            });
+          };
+        </script>
+      </ons-page>
+    </template>
+
+    <!---------------------------------------------------------------------------------------------------->
+    <template id="t_info_usuario">
+      <ons-page id="p_info_usuario">
+          <style>
+              .footer {
+                position: fixed;
+                left: 0;
+                bottom: 0;
+                width: 100%;
+                height: 14%;
+                text-align: center;
+              }
+              .icono{
+                margin-left: 10%;
+                margin-right: 10%;
+              }
+              </style>
+        <section>
+          <h1>Informaci&oacute;n de Usuario</h1>
+          <ons-card>
+            <img src="" style="width: 100%" id="info_imagen" />
+            <div class="title">
+              <span id="info_nombre"></span> <span id="info_apellido"></span>
+            </div>
+            <div class="content">
+              <p id="info_email"></p>
+              <p id="info_tel"></p>
+              <p id="info_dir"></p>
+              <p>
+                <ons-button
+                  modifier="outline large"
+                  id="btn_eliminar_usuario"
+                  data-id=""
+                  >Eliminar usuario</ons-button
+                >
+              </p>
+            </div>
+          </ons-card>
+        </section>
+        <div class="footer">
+            <p>
+              <ons-button id="addfavorito" class="icono"><i class="fas fa-star"></i></ons-button>
+              <ons-button id="rmfavorito" class="icono"><i class="fas fa-trash-alt"></i></ons-button>
+            </p>
+          </div>
+        <script>
+          ons.getScriptPage().onShow = function() {
+            $("#spn_cargando").text("Cargando info de usuario...");
+            $("#modal_cargando").show();
+            var id = this.data.id;
+            $.ajax({
+              url: "http://marcelocaiafa.com/usuario.php",
+              type: "GET",
+              dataType: "json",
+              data: { id: id },
+              success: function(usuario) {
+                $("#info_nombre").text(usuario.nombre);
+                $("#info_apellido").text(usuario.apellido);
+                $("#info_email").text(usuario.email);
+                var img =
+                  "http://images.marcelocaiafa.com/" + usuario.id + ".png";
+                $("#info_imagen").attr("src", img);
+                $("#info_dir").html(
+                  '<ons-icon icon="fa-map-marked"></ons-icon> ' +
+                    usuario.direccion
+                );
+                $("#info_tel").html(
+                  '<ons-icon icon="fa-mobile"></ons-icon> ' + usuario.telefono
+                );
+                $("#btn_eliminar_usuario").data("id", usuario.id);
+                
+                $("#addfavorito").on("click", function(){
+                  addFavorito(usuario.id,usuario.nombre,usuario.apellido);
+                });
+              },
+              complete: function() {
+                $("#modal_cargando").hide();
+              }
+            });
+          };
+          ons.getScriptPage().onInit = function() {
+            $(document).on("click", "#btn_eliminar_usuario", function() {
+              var id = $(this).data("id");
+              ons.notification
+                .confirm("Confirma que desea eliminar el usuario?", {
+                  buttonLabels: ["SI", "NO"],
+                  title: "Eliminar usuario"
+                })
+                .then(function(respuesta) {
+                  if (respuesta == 0) {
+                    $("#spn_cargando").text("Eliminando info de usuario...");
+                    $("#modal_cargando").show();
+                    $.ajax({
+                      url: "http://marcelocaiafa.com/usuario.php",
+                      type: "DELETE",
+                      data: JSON.stringify({ id: id }),
+                      dataType: "json",
+                      success: function() {
+                        var myNavigator = document.getElementById("nav");
+                        myNavigator.popPage({
+                          data: {
+                            mensaje: "El usuario se ha eliminado correctamente"
+                          }
+                        });
+                      },
+                      complete: function() {
+                        $("#modal_cargando").hide();
+                      }
+                    });
+                  }
+                });
+            });
+          };
+        </script>
+      </ons-page>
+    </template>
+
+    <!---------------------------------------------------------------------------------------------------->
+    <template id="t_mensajes">
+       <ons-page id="p_mensaje">
+              <script>
+                     ons.getScriptPage().onShow = function() {
+                            var usuario = sessionStorage.getItem("usuario");
+                            console.log(usuario);
+                            //vuelvo a convertir a objeto
+                            usuario = JSON.parse(usuario);
+                            console.log(usuario.id);
+                            mensajes_usuarios(usuario.id);
+                     };
               </script>
-
-       <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
-       <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
-       <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
-       <link rel="stylesheet" href="styles.css">
-       <script src="functions.js"></script>
-</head>
-
-<body>
-       <ons-navigator page="t_login" id="nav"></ons-navigator>
-
-       <template id="t_registro">
-              <ons-page id="p_registro">
-                     <section>
-                            <h1>Registro de Usuario</h1>
-
-                            <label for="inp_usuario"></label>
-                            <p><input class="text-input text-input--material" type="text" id="inp_usuario"
-                                          placeholder="Ingrese usuario"></p>
-
-                            <label for="inp_pwd"></label>
-                            <p><input class="text-input text-input--material" type="password" id="inp_pwd"
-                                          placeholder="Ingrese contrase&ntilde;a"></p>
-
-                            <label for="inp_email"></label>
-                            <p><input class="text-input text-input--material" type="text" id="inp_email"
-                                          placeholder="Ingrese email"></p>
-
-                            <label for="inp_tel"></label>
-                            <p><input class="text-input text-input--material" type="text" id="inp_tel"
-                                          placeholder="Ingrese tel&eacute;fono"></p>
-
-                            <label for="inp_dir"></label>
-                            <p><input class="text-input text-input--material" type="text" id="inp_dir"
-                                          placeholder="Ingrese direcci&oacute;n"></p>
-
-                            <label for="inp_nom"></label>
-                            <p><input class="text-input text-input--material" type="text" id="inp_nom"
-                                          placeholder="Ingrese nombre"></p>
-
-                            <label for="inp_ape"></label>
-                            <p><input class="text-input text-input--material" type="text" id="inp_ape"
-                                          placeholder="Ingrese apellido"></p>
-
-                            <label for="sel_genero"></label>
-                            <p>
-                                   <select id="sel_genero" class="text-input text-input--material">
-                                          <option value="">Seleccione una opci&oacute;</option>
-                                          <option value="M">Masculino</option>
-                                          <option value="F">Femenino</option>
-
-                                   </select>
-                            </p>
-
-                            <p><ons-button id="btn_registrar">Registrarse</ons-button></p>
-                     </section>
-              </ons-page>
+              <section>
+                     <h1>Mensajes</h1>
+              </section>
+              <section id="lista_mensajes">
+              </section>
+       </ons-page>
        </template>
+  </body>
 
-       <template id="t_login">
-              <ons-page id="p_login">
-                     <section>
-                            <h1>Login de Usuario</h1>
+  
+  <template id="dialog.html">
 
-                            <label for="inp_login_usuario"></label>
-                            <p><input class="text-input text-input--material" type="text" id="inp_login_usuario"
-                                          placeholder="Ingrese usuario"></p>
+              <ons-dialog id="my-dialog" cancelable>
+                <div style="text-align: left; padding: 10px;">
+                 <p> <ons-select select-id="mensajeUsuario">
+                    <option value="-1">
+                           Seleccione un usuario
+                    </option>
+                  </ons-select></p>
+            
+                  <p><input type="text" name="" id="mensajeHtml" placeholder="Ingrese un mensaje"  class="text-input text-input--material"></p>
+                  <p>
+                    <ons-button style="width:98%" onclick="enviarMensaje()">Enviar</ons-button>
+                  </p>
+                </div>
+              </ons-dialog>
 
-                            <label for="inp_login_pwd"></label>
-                            <p><input class="text-input text-input--material" type="password" id="inp_login_pwd"
-                                          placeholder="Ingrese contrase&ntilde;a"></p>
-
-                            <p><ons-button id="btn_login">Ingresar</ons-button></p>
-                     </section>
-              </ons-page>
-       </template>
-
-       <template id="t_listado_usuarios">
-              <ons-page id="p_listado_usuarios">
-                     <!--https://onsen.io/v2/guide/lifecycle.html-->
-                     <script>
-                            ons.getScriptPage().onInit = function () {
-                                   //onInit = una sola vez
-                                   //onShow = Cada vez que abre la pagina.
-                                   alert("Se cargo la pagina")
-                                   listado_usuarios();
-                            };
-                     </script>
-                     <section id="lista">
-                            <ons-list-header>Lista de Usuario</ons-list-header>
-                     </section>
-              </ons-page>
-       </template>
-
-       <template id="t_usuario">
-              <ons-page id="p_usuario">
-                     <!--https://onsen.io/v2/guide/lifecycle.html-->
-                     <script>
-                            ons.getScriptPage().onInit = function () {
-                                   //onInit = una sola vez
-                                   //onShow = Cada vez que abre la pagina.
-                                   alert("Se cargo la pagina")
-                                   alert(this.data.usu)
-                                   cargarUsuario(this.data.usu);
-                            };
-                     </script>
-                     <div class="container">
-                            <!--Objeto card-->
-                            <p><img class="card__image" alt=""></p>
-                            <div class="card__content">
-                            </div>
-                     </div>
-              </ons-page>
-       </template>
-
-</body>
-
+            </template>
 </html>
