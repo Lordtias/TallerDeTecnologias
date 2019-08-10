@@ -230,18 +230,28 @@ function mensajes_usuarios(id){
     });
 }
 function cargarMonopatines(latitud, longitud, mymap){
-   $("#modal_cargando").show();  
+   $("#modal_cargando").show();
+   var Aharv =[];
+   var Aelement = [];
    $.ajax({
       url:"http://oransh.develotion.com/monopatines.php",
       type:"GET",
       dataType:"json",
       success:function(response){
-         console.log("Itere");
-         response.monopatines.forEach(element => {
-            console.log("Itere");
-            console.log(element.latitud +" "+ element.longitud)
-            var marker = L.marker([element.latitud, element.longitud]).addTo(mymap);
-         });
+         var i =0;
+         // response.monopatines.forEach(element => {
+         //     var marker = L.marker([element.latitud, element.longitud]).addTo(mymap);
+         //    Aharv[i] = haversine(latitud,longitud,element);
+         //    Aelement[i] = element;
+         //    i++;
+
+         // });
+         //bubbleSort(Aharv,Aelement)
+
+         // for (let index = 0; index < 5; index++) {
+         //    const ele = Aelement[index];
+         //    var marker = L.marker([ele.latitud, ele.longitud]).addTo(mymap);
+         // }
       },
       error:function(xml, err, status){
          console.log(err);
@@ -251,3 +261,50 @@ function cargarMonopatines(latitud, longitud, mymap){
       }
    });
 }
+
+function toRadians(x){
+   return Math.sin(x * Math.PI / 180)
+}
+
+function haversine(latitud, longitud,element){
+   var R = 6371e3; // metres
+   var lat1 = toRadians(latitud);
+   var lat2 = toRadians(element.latitud);
+   var delta1 = toRadians((element.latitud-latitud));
+   var delta2 = toRadians((element.longitud-longitud));
+
+   var a = Math.sin(delta1/2) * Math.sin(delta1/2) +
+         Math.cos(lat1) * Math.cos(lat2) *
+         Math.sin(delta2/2) * Math.sin(delta2/2);
+   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+   return R * c;
+}
+function bubbleSort(Aharv, Aelement) 
+{ 
+    var n = Aharv.length; 
+  
+    // Traverse through all array elements 
+    for(var i = 0; i < n; i++)  
+    { 
+        // Last i elements are already in place 
+        for (var j = 0; j < n - i - 1; j++)  
+        { 
+            // traverse the array from 0 to n-i-1 
+            // Swap if the element found is greater 
+            // than the next element 
+            if (Aharv[j] > Aharv[j+1]) 
+            { 
+                var t = Aharv[j];
+               var m = Aelement[j];
+
+                Aharv[j] = Aharv[j+1];
+                Aelement[j] = Aelement[j+1];
+
+                Aharv[j+1] = t;
+                Aelement[j+1] = m;
+
+            } 
+        } 
+    }
+} 
