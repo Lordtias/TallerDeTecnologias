@@ -1,298 +1,347 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    
+
     <title>Quelotines</title>
 
     <!--JQUERY-->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"
-    ></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 
     <!--Onsenui-->
     <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css" />
-    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css" />
     <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+
+    <!--Leaflet Maps-->
+    <link   rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+            integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+            crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+            integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+            crossorigin="">
+   </script>
 
     <!--Hoja de estilo Local-->
     <link rel="stylesheet" href="styles.css" />
-
+    <!--JS local-->
+    <script src="functions.js"></script>
     <!--Base SQLITE local-->
     <script src="db.js"></script>
+    
+    <!-- <script src="mapa.js"></script> -->
 
-  </head>
+</head>
 
-  <body>
+<body>
 
     <ons-modal direction="up" id="modal_cargando">
-      <div style="text-align: center">
-        <p>
-          <ons-icon icon="md-spinner" size="28px" spin></ons-icon>
-          <span id="spn_cargando"></span>
-        </p>
-      </div>
+        <div style="text-align: center">
+            <p>
+                <ons-icon icon="md-spinner" size="28px" spin></ons-icon>
+                <span id="spn_cargando"></span>
+            </p>
+        </div>
     </ons-modal>
 
     <ons-splitter>
 
-      <ons-splitter-side id="menu" side="left" width="220px" collapse swipeable>
-        <ons-page>
-          <ons-list>
-            <ons-list-item onclick="fn.load('t_principal')" tappable>
-                  Home
-            </ons-list-item>
-            <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
-                <div class="left">
-                    <img class="list-item__thumbnail" src="scooter.png">
-                  </div>
-              Alquiler de monopatin
-            </ons-list-item>
-            <ons-list-item onclick="fn.load('t_billetera')" tappable>
-                <div class="left">
-                    <img class="list-item__thumbnail" src="tarjeta.png">
-                  </div>
-              Metodos de Pago
-            </ons-list-item>
-            <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
-              Historico de Viajes
-            </ons-list-item>
-            <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
-              Cerrar Sesion
-            </ons-list-item>
-          </ons-list>
-        </ons-page>
-      </ons-splitter-side>
+        <ons-splitter-side id="menu" side="left" width="220px" collapse swipeable>
+            <ons-page>
+                <ons-list>
+                    <img style="width: 100%; height: auto; border-radius: 5%; box-shadow: 5px 5px 5px 5px gray;" src="logo.png" />
+                    <ons-list-item onclick="fn.load('t_principal')" tappable >
+                        Home
+                    </ons-list-item>
+                    <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
+                        <div class="left">
+                            <img class="list-item__thumbnail" src="scooter.png">
+                        </div>
+                        Alquiler de monopatin
+                    </ons-list-item>
+                    <ons-list-item onclick="fn.load('t_billetera')" tappable>
+                        <div class="left">
+                            <img class="list-item__thumbnail" src="tarjeta.png">
+                        </div>
+                        Metodos de Pago
+                    </ons-list-item>
+                    <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
+                        Historico de Viajes
+                    </ons-list-item>
+                    <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
+                        Cerrar Sesion
+                    </ons-list-item>
+                </ons-list>
+            </ons-page>
+        </ons-splitter-side>
 
-      <ons-splitter-content id="content">
-              <ons-navigator animation="fade" page="t_login" id="nav"></ons-navigator>
-       </ons-splitter-content>
+        <ons-splitter-content id="content">
+            <ons-navigator animation="fade" page="t_login" id="nav"></ons-navigator>
+        </ons-splitter-content>
 
     </ons-splitter>
-    
+
     <!---------------------------------------------------------------------------------------------------->
     <template id="t_registro">
-      <ons-page id="p_registro">
-        <section>
-          <h1>Registro de Usuario</h1>
-          <label for="inp_usuario">Usuario:</label>
-          <p>
-            <input class="text-input text-input--material" type="text" id="inp_usuario" placeholder="Ingrese usuario"/>
-          </p>
-          <label for="inp_pwd">Password</label>
-          <p>
-            <input class="text-input text-input--material" type="password" id="inp_pwd" placeholder="Ingrese contrase&ntilde;a"/>
-          </p>
-          <p><ons-button id="btn_registrar_usu">Registrarse</ons-button></p>
-        </section>
-      </ons-page>
+        <ons-page id="p_registro">
+            <section>
+                <h1>Registro de Usuario</h1>
+                <label for="inp_usuario">Usuario:</label>
+                <p>
+                    <input class="text-input text-input--material" type="text" id="inp_usuario"
+                        placeholder="Ingrese usuario" />
+                </p>
+                <label for="inp_pwd">Password</label>
+                <p>
+                    <input class="text-input text-input--material" type="password" id="inp_pwd"
+                        placeholder="Ingrese contrase&ntilde;a" />
+                </p>
+                <p>
+                    <ons-button id="btn_registrar_usu">Registrarse</ons-button>
+                </p>
+            </section>
+        </ons-page>
     </template>
-    
+
     <!---------------------------------------------------------------------------------------------------->
     <template id="t_login">
-      <ons-page id="p_login">
-        <section>
-          <h1>Login de Usuario</h1>
-          <label for="inp_login_usuario"></label>
-          <p>
-            <input  class="text-input text-input--material" type="text" id="inp_login_usuario" placeholder="Ingrese usuario"/>
-          </p>
-          <label for="inp_login_pwd"></label>
-          <p>
-            <input class="text-input text-input--material" type="password" id="inp_login_pwd" placeholder="Ingrese contrase&ntilde;a"/>
-          </p>
-          <p><ons-button id="btn_login">Ingresar</ons-button>
-            <ons-button modifier="outline" id="btn_registrar">Registrarse</ons-button></p>
-        </section>
-      </ons-page>
+        <ons-page id="p_login">
+            <section>
+                <h1>Login de Usuario</h1>
+                <label for="inp_login_usuario"></label>
+                <p>
+                    <input class="text-input text-input--material" type="text" id="inp_login_usuario"
+                        placeholder="Ingrese usuario" />
+                </p>
+                <label for="inp_login_pwd"></label>
+                <p>
+                    <input class="text-input text-input--material" type="password" id="inp_login_pwd"
+                        placeholder="Ingrese contrase&ntilde;a" />
+                </p>
+                <p>
+                    <ons-button id="btn_login">Ingresar</ons-button>
+                    <ons-button modifier="outline" id="btn_registrar">Registrarse</ons-button>
+                </p>
+            </section>
+        </ons-page>
 
-    <!---------------------------------------------------------------------------------------------------->
+        <!---------------------------------------------------------------------------------------------------->
     </template>
     <template id="t_principal">
-      <ons-page id="p_principal">
-        <ons-toolbar>
-          <div class="left">
-            <ons-toolbar-button icon="fa-bars" onclick="fn.open()"></ons-toolbar-button>
-          </div>
-        </ons-toolbar>
-        <section>
-          <h1 style="text-align: center">Quelotines Inc.</h1>
-          <img style="width: 100%; height: auto;" src="logo.png"/>
-          <p id="saludo" style="text-align:right"></p>
-          <br>
-          <p style="text-align: center">
-            <a id="scooter"><img style="width: 20%; height: auto; margin-right: 15%" src="scooter.png"></a>
-            <a id="tarjeta"><img style="width: 20%; height: auto; margin-left: 15%" src="tarjeta.png"></a>
-          </p>
-          <ons-list id="l_principal"></ons-list>
-        </section>
-        <!--https://onsen.io/v2/guide/lifecycle.html-->
-        <script>
-          ons.getScriptPage().onShow = function() {
-            var usuario = sessionStorage.getItem("usuario");
-              var id = sessionStorage.getItem("usuario_id");
-            
-            //usuario = JSON.parse(usuario);
-            //$("#saludo").html("Hola <strong>" + usuario.nombre + "</strong>!");
-            
-            $("#saludo").html("Hola <strong>" + usuario + "</strong>!");
-            if(this.data){
-              var mensaje = this.data.mensaje;
-              if (mensaje) {
-                     ons.notification.toast(mensaje, { timeout: 3000 });
-              }
-            }
+        <ons-page id="p_principal">
+            <ons-toolbar>
+                <div class="left">
+                    <ons-toolbar-button icon="fa-bars" onclick="fn.open()"></ons-toolbar-button>
+                </div>
+            </ons-toolbar>
+            <section>
+                <h1 style="text-align: center">Quelotines Inc.</h1>
+                <img style="width: 100%; height: auto; box-shadow: 1px 1px 5px 1px gray;" src="logo.png" />
+                <p id="saludo" style="text-align:right"></p>
+                <br>
+                <p style="text-align: center">
+                    <a id="scooter"><img style="width: 20%; height: auto; margin-right: 15%; box-shadow: 5px 5px 5px 1px gray;" src="scooter.png"></a>
+                    <a id="tarjeta"><img style="width: 20%; height: auto; margin-left: 15%; box-shadow: 5px 5px 5px 1px gray;" src="tarjeta.png"></a>
+                </p>
+                <ons-list id="l_principal"></ons-list>
+            </section>
+            <!--https://onsen.io/v2/guide/lifecycle.html-->
+            <script>
+                ons.getScriptPage().onShow = function () {
+                    console.log("onShow Principal")
 
-            // $("#tarjeta").on("click", function(){
-            //   datos = {
-            //   usuario:id,
-            //   };
-            //   console.log("holaaaa");
-            //   fn.load('t_billetera', {data:{"usu":usuario, "id":id}});
+                    // if (this.data) {
+                    //     var mensaje = this.data.mensaje;
+                    //     if (mensaje) {
+                    //         ons.notification.toast(mensaje, { timeout: 3000 });
+                    //     }
+                    // }
 
-              //$.ajax({
-              //url:"http://oransh.develotion.com/login.php",
-              //data:JSON.stringify(datos),
-              //type:"POST",
-              //dataType:"json",
-              //success:function(respuesta){
-              //      console.log(respuesta.token);
-              //      //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
-              //      fn.load('t_billetera', {data:{"usu":usuario, "id":respuesta.id}});
-              //},
-              //error:function(xml, err, status){
-              //      ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
-              //   }
-              //});
-            // });
-            
-          };
-        </script>
-      </ons-page>
+                };
+
+                ons.getScriptPage().onInit = function () {
+                    console.log("onInit Principal")
+                    var usuario = sessionStorage.getItem("usuario");
+                    var id = sessionStorage.getItem("usuario_id");
+                    
+                    //usuario = JSON.parse(usuario);
+                    //$("#saludo").html("Hola <strong>" + usuario.nombre + "</strong>!");
+                    
+                    $("#saludo").html("Hola <strong>" + usuario + "</strong>!");
+
+                    $("#tarjeta").on("click", function () {
+                        datos = {
+                            usuario: id,
+                        };
+                        console.log("Billetera");
+                        fn.load('t_billetera', { data: { "usu": usuario, "id": id } });
+                    });
+
+                    $("#scooter").on("click", function () {
+                        datos = {
+                            usuario: id,
+                        };
+                        console.log("scooter");
+                        fn.load('t_alquiler', { data: { "usu": usuario, "id": id } });
+                    });
+
+                };
+
+            </script>
+        </ons-page>
     </template>
 
     <!---------------------------------------------------------------------------------------------------->
     <template id="t_billetera">
-      <ons-page id="p_billetera">
-        <section>
-          <h1 style="text-align: center">Billetera</h1>
-          <ons-card>
-            <img src="wallet.png" style="width: 100%; height: auto;" id="info_imagen" />
-            <div class="title">
-              <span id="info_nombre"></span> <span id="info_apellido"></span>
-            </div>
-            <div class="content" style="text-align: center">
-              <label for="nr_tarjeta">Numero de Tarjeta</label>
-              <p id="nr_tarjeta">1232 3453 3456 2345</p>
-              <label for="nr_tarjeta">Saldo</label>
-              <p id="nr_tarjeta">$ 3.456</p>
-              <p>
-                  <ons-button id="btn_agregar_saldo" data-id="">Agregar saldo</ons-button>
-              </p>
-              <p>
-                <ons-button modifier="outline large" id="btn_eliminar_tarjeta" data-id="">Eliminar</ons-button>
-                <ons-button modifier="outline large" id="btn_agregar_tarjeta" data-id="">Agregar</ons-button>
-              </p>
-            </div>
-          </ons-card>
-        </section>
-        <script>
-          ons.getScriptPage().onShow = function() {
-            $("#spn_cargando").text("Cargando info de usuario...");
-            $("#modal_cargando").show();
-            var id = this.data.id;
-            $.ajax({
-              url: "http://marcelocaiafa.com/usuario.php",
-              type: "GET",
-              dataType: "json",
-              data: { id: id },
-              success: function(usuario) {
-              },
-              complete: function() {
-                $("#modal_cargando").hide();
-              }
-            });
-          };
-          ons.getScriptPage().onInit = function() {
-            $("#nr_tarjeta").text(this.data.usu);
-            $(document).on("click", "#btn_eliminar_usuario", function() {
-              var id = $(this).data("id");
-              ons.notification
-                .confirm("Confirma que desea eliminar el usuario?", {
-                  buttonLabels: ["SI", "NO"],
-                  title: "Eliminar usuario"
-                })
-                .then(function(respuesta) {
-                  if (respuesta == 0) {
-                    $("#spn_cargando").text("Eliminando info de usuario...");
+        <ons-page id="p_billetera">
+            <section>
+                <h1 style="text-align: center">Billetera</h1>
+                <ons-card>
+                    <img src="wallet.png" style="width: 100%; height: auto;" id="info_imagen" />
+                    <div class="title">
+                        <span id="info_nombre"></span> <span id="info_apellido"></span>
+                    </div>
+                    <div class="content" style="text-align: center">
+                        <label for="nr_tarjeta">Numero de Tarjeta</label>
+                        <p id="nr_tarjeta">1232 3453 3456 2345</p>
+                        <label for="nr_tarjeta">Saldo</label>
+                        <p id="nr_tarjeta">$ 3.456</p>
+                        <p>
+                            <ons-button id="btn_agregar_saldo" data-id="">Agregar saldo</ons-button>
+                        </p>
+                        <p>
+                            <ons-button modifier="outline large" id="btn_eliminar_tarjeta" data-id="">Eliminar
+                            </ons-button>
+                            <ons-button modifier="outline large" id="btn_agregar_tarjeta" data-id="">Agregar
+                            </ons-button>
+                        </p>
+                    </div>
+                </ons-card>
+            </section>
+            <script>
+                ons.getScriptPage().onShow = function () {
+                    $("#spn_cargando").text("Cargando info de usuario...");
                     $("#modal_cargando").show();
+                    var id = this.data.id;
                     $.ajax({
-                      url: "http://marcelocaiafa.com/usuario.php",
-                      type: "DELETE",
-                      data: JSON.stringify({ id: id }),
-                      dataType: "json",
-                      success: function() {
-                        var myNavigator = document.getElementById("nav");
-                        myNavigator.popPage({
-                          data: {
-                            mensaje: "El usuario se ha eliminado correctamente"
-                          }
-                        });
-                      },
-                      complete: function() {
-                        $("#modal_cargando").hide();
-                      }
+                        url: "http://marcelocaiafa.com/usuario.php",
+                        type: "GET",
+                        dataType: "json",
+                        data: { id: id },
+                        success: function (usuario) {
+                        },
+                        complete: function () {
+                            $("#modal_cargando").hide();
+                        }
                     });
-                  }
-                });
-            });
-          };
-        </script>
-      </ons-page>
+                };
+                ons.getScriptPage().onInit = function () {
+                    $("#nr_tarjeta").text(this.data.usu);
+                    $(document).on("click", "#btn_eliminar_usuario", function () {
+                        var id = $(this).data("id");
+                        ons.notification
+                            .confirm("Confirma que desea eliminar el usuario?", {
+                                buttonLabels: ["SI", "NO"],
+                                title: "Eliminar usuario"
+                            })
+                            .then(function (respuesta) {
+                                if (respuesta == 0) {
+                                    $("#spn_cargando").text("Eliminando info de usuario...");
+                                    $("#modal_cargando").show();
+                                    $.ajax({
+                                        url: "http://marcelocaiafa.com/usuario.php",
+                                        type: "DELETE",
+                                        data: JSON.stringify({ id: id }),
+                                        dataType: "json",
+                                        success: function () {
+                                            var myNavigator = document.getElementById("nav");
+                                            myNavigator.popPage({
+                                                data: {
+                                                    mensaje: "El usuario se ha eliminado correctamente"
+                                                }
+                                            });
+                                        },
+                                        complete: function () {
+                                            $("#modal_cargando").hide();
+                                        }
+                                    });
+                                }
+                            });
+                    });
+                };
+            </script>
+        </ons-page>
     </template>
 
     <!---------------------------------------------------------------------------------------------------->
-    <template id="t_mensajes">
-       <ons-page id="p_mensaje">
-              <script>
-                     ons.getScriptPage().onShow = function() {
-                            var usuario = sessionStorage.getItem("usuario");
-                            console.log(usuario);
-                            //vuelvo a convertir a objeto
-                            usuario = JSON.parse(usuario);
-                            console.log(usuario.id);
-                            mensajes_usuarios(usuario.id);
-                     };
-              </script>
-              <section>
-                     <h1>Mensajes</h1>
-              </section>
-              <section id="lista_mensajes">
-              </section>
-       </ons-page>
-       </template>
-           <!--JS local-->
-    <script src="functions.js"></script>
-  </body>
+    <template id="t_alquiler">
+        <ons-page id="p_alquiler">
+            <section>
+                <h1>Selecciona el Monopatin</h1>
+                <div id="mapid"></div>
+            </section>
+            <script>
+                ons.getScriptPage().onShow = function () {
 
-  
-  <template id="dialog.html">
+                try{
+                    
+                    var mymap = L.map('mapid').setView([-34.911111, -56.164532], 13);
 
-              <ons-dialog id="my-dialog" cancelable>
-                <div style="text-align: left; padding: 10px;">
-                 <p> <ons-select select-id="mensajeUsuario">
+                    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+                        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                        maxZoom: 18,
+                        id: 'mapbox.streets',
+                        accessToken: 'pk.eyJ1IjoibG9yZHRpYXMiLCJhIjoiY2p5aHk4dzgxMDRxdjNuanhkZHlydXhqbSJ9.4lLFkbGTNbtNUbXca3FP-w'
+                    }).addTo(mymap);
+
+                    var marker = L.marker([-34.911111, -56.164532]).addTo(mymap);
+
+                    var circle = L.circle([-34.911111, -56.164532], {
+                                                                color: 'red',
+                                                                fillColor: '#f03',
+                                                                fillOpacity: 0.5,
+                                                                radius: 500
+                                                            }).addTo(mymap);
+                    var polygon = L.polygon([
+                                                [-34.911111, -56.164532],
+                                                [-34.901111, -56.154532],
+                                                [-34.901111, -56.154532]
+                                            ]).addTo(mymap);
+                }
+                catch(e){
+                    console.log("Hola: "+e.message);
+                }
+            };
+            </script>
+        </ons-page>
+    </template>
+</body>
+
+
+<template id="dialog.html">
+
+    <ons-dialog id="my-dialog" cancelable>
+        <div style="text-align: left; padding: 10px;">
+            <p>
+                <ons-select select-id="mensajeUsuario">
                     <option value="-1">
-                           Seleccione un usuario
+                        Seleccione un usuario
                     </option>
-                  </ons-select></p>
-            
-                  <p><input type="text" name="" id="mensajeHtml" placeholder="Ingrese un mensaje"  class="text-input text-input--material"></p>
-                  <p>
-                    <ons-button style="width:98%" onclick="enviarMensaje()">Enviar</ons-button>
-                  </p>
-                </div>
-              </ons-dialog>
+                </ons-select>
+            </p>
 
-            </template>
+            <p><input type="text" name="" id="mensajeHtml" placeholder="Ingrese un mensaje"
+                    class="text-input text-input--material"></p>
+            <p>
+                <ons-button style="width:98%" onclick="enviarMensaje()">Enviar</ons-button>
+            </p>
+        </div>
+    </ons-dialog>
+
+</template>
+
 </html>

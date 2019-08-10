@@ -8,3 +8,9 @@ section{
 .list-item--material__thumbnail {
     border-radius: 0% !important;
 }
+.bordes{
+    box-shadow: 5px 5px 5px 0px grey;
+}
+#mapid { height: 100%;
+    width: 100vw; 
+}
