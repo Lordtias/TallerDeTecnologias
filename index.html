@@ -282,40 +282,54 @@
         <ons-page id="p_alquiler">
             <section>
                 <h1>Selecciona el Monopatin</h1>
-                <div id="mapid"></div>
+                <div class="map-responsive">
+                    <div id="mapid"></div>
+                </div>
             </section>
             <script>
+                
                 ons.getScriptPage().onShow = function () {
-
-                try{
-                    
                     var mymap = L.map('mapid').setView([-34.911111, -56.164532], 13);
+                    try{   
 
-                    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-                        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-                        maxZoom: 18,
-                        id: 'mapbox.streets',
-                        accessToken: 'pk.eyJ1IjoibG9yZHRpYXMiLCJhIjoiY2p5aHk4dzgxMDRxdjNuanhkZHlydXhqbSJ9.4lLFkbGTNbtNUbXca3FP-w'
-                    }).addTo(mymap);
+                        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+                            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                            maxZoom: 18,
+                            id: 'mapbox.streets',
+                            accessToken: 'pk.eyJ1IjoibG9yZHRpYXMiLCJhIjoiY2p5aHk4dzgxMDRxdjNuanhkZHlydXhqbSJ9.4lLFkbGTNbtNUbXca3FP-w'
+                        }).addTo(mymap);
 
-                    var marker = L.marker([-34.911111, -56.164532]).addTo(mymap);
+                        var marker = L.marker([-34.911111, -56.164532]).addTo(mymap);
 
-                    var circle = L.circle([-34.911111, -56.164532], {
-                                                                color: 'red',
-                                                                fillColor: '#f03',
-                                                                fillOpacity: 0.5,
-                                                                radius: 500
-                                                            }).addTo(mymap);
-                    var polygon = L.polygon([
-                                                [-34.911111, -56.164532],
-                                                [-34.901111, -56.154532],
-                                                [-34.901111, -56.154532]
-                                            ]).addTo(mymap);
-                }
-                catch(e){
-                    console.log("Hola: "+e.message);
-                }
-            };
+                        var circle = L.circle([-34.911111, -56.164532], {
+                                                                    color: 'red',
+                                                                    fillColor: '#f03',
+                                                                    fillOpacity: 0.5,
+                                                                    radius: 500
+                                                                }).addTo(mymap);
+                        var polygon = L.polygon([
+                                                    [-34.911111, -56.164532],
+                                                    [-34.901111, -56.154532],
+                                                    [-34.901111, -56.154532]
+                                                ]).addTo(mymap);
+                        var popup = L.popup();
+
+                        
+                    }
+                    catch(e){
+                        console.log("Hola: "+e.message);
+                    }
+                    
+                    function onMapClick(e) {
+                        console.log("CLic")
+                                popup
+                                    .setLatLng(e.latlng)
+                                    .setContent("You clicked the map at " + e.latlng.toString())
+                                    .openOn(mymap);
+                            }
+
+                    mymap.on('click', onMapClick);
+                };
             </script>
         </ons-page>
     </template>
