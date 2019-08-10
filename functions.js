@@ -52,16 +52,8 @@ window.fn.open = function() {
   menu.open();
 };
 
-//window.fn.load = function(page) {
-//  var content = document.getElementById('content');
-//  var menu = document.getElementById('menu');
-//  content.load(page).then(menu.close.bind(menu));
-//};
-
 window.fn.load = function(page, params) {
-  //var content = document.getElementById('content');
   var menu = document.getElementById('menu');
-  //content.load(page).then(menu.close.bind(menu));
   var p = page.replace("t_","p_");
   var nav = document.getElementById('nav');
   menu.close();
@@ -79,7 +71,6 @@ ons.ready(function(){
    $("#btn_registrar_usu").on("click", function(){
         var usuario = $("#inp_usuario").val();
         var password = $("#inp_pwd").val();
-        //envio datos al servidor
         datos = {
          usuario:usuario,
          password:password
@@ -90,17 +81,18 @@ ons.ready(function(){
            type:"POST",
            dataType:"json",
            success:function(respuesta){
-               //si todo ok redirecciono a listado de usuarios.
                $.ajaxSetup({
                   headers:{
                      token:respuesta.token
                   }
                });
-               fn.load('t_listado_usuarios');
+               console.log(respuesta.token);
+               //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
+               sessionStorage.setItem("usuario",usuario);
+               sessionStorage.setItem("usuario_id",respuesta.id);
+               fn.load('t_principal');
            },
            error:function(xml, err, status){
-               // si hay error muestro error del servidor en toast.
-               //console.log(xml.responseJSON.descripcion);
                ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
             }
          });
@@ -114,7 +106,6 @@ ons.ready(function(){
    $("#btn_login").on("click", function(){
       var usuario = $("#inp_login_usuario").val();
       var password = $("#inp_login_pwd").val();
-      //envio datos al servidor
       datos = {
        usuario:usuario,
        password:password
@@ -125,22 +116,18 @@ ons.ready(function(){
       type:"POST",
       dataType:"json",
       success:function(respuesta){
-            //si todo ok redirecciono a listado de usuarios.
-            //redirecciono a listado de usuario
             $.ajaxSetup({
                headers:{
                   token:respuesta.token
                }
             });
             console.log(respuesta.token);
-            //grabo el objeto como string en session.
-            sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
-            var myNavigator = document.getElementById('nav');
-            myNavigator.pushPage('t_listado_usuarios');
+            //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
+            sessionStorage.setItem("usuario",usuario);
+            sessionStorage.setItem("usuario_id",respuesta.id);
+            fn.load('t_principal');
       },
       error:function(xml, err, status){
-            // si hay error muestro error del servidor en toast.
-            //console.log(xml.responseJSON.descripcion);
             ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
          }
       });

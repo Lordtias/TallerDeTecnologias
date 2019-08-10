@@ -109,18 +109,25 @@
           </div>
         </ons-toolbar>
         <section>
-          <h1>Listado de usuarios</h1>
+          <h1 style="text-align: center">Quelotines Inc.</h1>
+          <img style="width: 100%; height: auto;" src="logo.png"/>
           <p id="saludo" style="text-align:right"></p>
+          <br>
+          <p style="text-align: center">
+            <a><img style="width: 20%; height: auto; margin-right: 15%" src="scooter.png"></a>
+            <a><img style="width: 20%; height: auto; margin-left: 15%" src="tarjeta.png"></a>
+          </p>
           <ons-list id="l_principal"></ons-list>
         </section>
         <!--https://onsen.io/v2/guide/lifecycle.html-->
         <script>
           ons.getScriptPage().onShow = function() {
             var usuario = sessionStorage.getItem("usuario");
-            //vuelvo a convertir a objeto
-            usuario = JSON.parse(usuario);
-            $("#saludo").html("Hola <strong>" + usuario.nombre + "</strong>!");
-            listado_usuarios();
+            
+            //usuario = JSON.parse(usuario);
+            //$("#saludo").html("Hola <strong>" + usuario.nombre + "</strong>!");
+            
+            $("#saludo").html("Hola <strong>" + usuario + "</strong>!");
             if(this.data){
               var mensaje = this.data.mensaje;
               if (mensaje) {
@@ -128,13 +135,6 @@
               }
             }
             
-          };
-          ons.getScriptPage().onInit = function() {
-            $(document).on("click", ".dato_usuario", function() {
-              var id_usuario = $(this).data("id");
-              var mytor = document.getElementById("nav");
-              mytor.pushPage("t_info_usuario", { data: { id: id_usuario } });
-            });
           };
         </script>
       </ons-page>
