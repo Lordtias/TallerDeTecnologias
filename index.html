@@ -18,8 +18,7 @@
 
     <!--Hoja de estilo Local-->
     <link rel="stylesheet" href="styles.css" />
-    <!--JS local-->
-    <script src="functions.js"></script>
+
     <!--Base SQLITE local-->
     <script src="db.js"></script>
 
@@ -41,10 +40,19 @@
       <ons-splitter-side id="menu" side="left" width="220px" collapse swipeable>
         <ons-page>
           <ons-list>
+            <ons-list-item onclick="fn.load('t_principal')" tappable>
+                  Home
+            </ons-list-item>
             <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
+                <div class="left">
+                    <img class="list-item__thumbnail" src="scooter.png">
+                  </div>
               Alquiler de monopatin
             </ons-list-item>
-            <ons-list-item onclick="fn.load('t_mensajes')" tappable>
+            <ons-list-item onclick="fn.load('t_billetera')" tappable>
+                <div class="left">
+                    <img class="list-item__thumbnail" src="tarjeta.png">
+                  </div>
               Metodos de Pago
             </ons-list-item>
             <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
@@ -114,8 +122,8 @@
           <p id="saludo" style="text-align:right"></p>
           <br>
           <p style="text-align: center">
-            <a><img style="width: 20%; height: auto; margin-right: 15%" src="scooter.png"></a>
-            <a><img style="width: 20%; height: auto; margin-left: 15%" src="tarjeta.png"></a>
+            <a id="scooter"><img style="width: 20%; height: auto; margin-right: 15%" src="scooter.png"></a>
+            <a id="tarjeta"><img style="width: 20%; height: auto; margin-left: 15%" src="tarjeta.png"></a>
           </p>
           <ons-list id="l_principal"></ons-list>
         </section>
@@ -123,6 +131,7 @@
         <script>
           ons.getScriptPage().onShow = function() {
             var usuario = sessionStorage.getItem("usuario");
+              var id = sessionStorage.getItem("usuario_id");
             
             //usuario = JSON.parse(usuario);
             //$("#saludo").html("Hola <strong>" + usuario.nombre + "</strong>!");
@@ -134,6 +143,29 @@
                      ons.notification.toast(mensaje, { timeout: 3000 });
               }
             }
+
+            // $("#tarjeta").on("click", function(){
+            //   datos = {
+            //   usuario:id,
+            //   };
+            //   console.log("holaaaa");
+            //   fn.load('t_billetera', {data:{"usu":usuario, "id":id}});
+
+              //$.ajax({
+              //url:"http://oransh.develotion.com/login.php",
+              //data:JSON.stringify(datos),
+              //type:"POST",
+              //dataType:"json",
+              //success:function(respuesta){
+              //      console.log(respuesta.token);
+              //      //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
+              //      fn.load('t_billetera', {data:{"usu":usuario, "id":respuesta.id}});
+              //},
+              //error:function(xml, err, status){
+              //      ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
+              //   }
+              //});
+            // });
             
           };
         </script>
@@ -141,50 +173,30 @@
     </template>
 
     <!---------------------------------------------------------------------------------------------------->
-    <template id="t_info_usuario">
-      <ons-page id="p_info_usuario">
-          <style>
-              .footer {
-                position: fixed;
-                left: 0;
-                bottom: 0;
-                width: 100%;
-                height: 14%;
-                text-align: center;
-              }
-              .icono{
-                margin-left: 10%;
-                margin-right: 10%;
-              }
-              </style>
+    <template id="t_billetera">
+      <ons-page id="p_billetera">
         <section>
-          <h1>Informaci&oacute;n de Usuario</h1>
+          <h1 style="text-align: center">Billetera</h1>
           <ons-card>
-            <img src="" style="width: 100%" id="info_imagen" />
+            <img src="wallet.png" style="width: 100%; height: auto;" id="info_imagen" />
             <div class="title">
               <span id="info_nombre"></span> <span id="info_apellido"></span>
             </div>
-            <div class="content">
-              <p id="info_email"></p>
-              <p id="info_tel"></p>
-              <p id="info_dir"></p>
+            <div class="content" style="text-align: center">
+              <label for="nr_tarjeta">Numero de Tarjeta</label>
+              <p id="nr_tarjeta">1232 3453 3456 2345</p>
+              <label for="nr_tarjeta">Saldo</label>
+              <p id="nr_tarjeta">$ 3.456</p>
               <p>
-                <ons-button
-                  modifier="outline large"
-                  id="btn_eliminar_usuario"
-                  data-id=""
-                  >Eliminar usuario</ons-button
-                >
+                  <ons-button id="btn_agregar_saldo" data-id="">Agregar saldo</ons-button>
+              </p>
+              <p>
+                <ons-button modifier="outline large" id="btn_eliminar_tarjeta" data-id="">Eliminar</ons-button>
+                <ons-button modifier="outline large" id="btn_agregar_tarjeta" data-id="">Agregar</ons-button>
               </p>
             </div>
           </ons-card>
         </section>
-        <div class="footer">
-            <p>
-              <ons-button id="addfavorito" class="icono"><i class="fas fa-star"></i></ons-button>
-              <ons-button id="rmfavorito" class="icono"><i class="fas fa-trash-alt"></i></ons-button>
-            </p>
-          </div>
         <script>
           ons.getScriptPage().onShow = function() {
             $("#spn_cargando").text("Cargando info de usuario...");
@@ -196,24 +208,6 @@
               dataType: "json",
               data: { id: id },
               success: function(usuario) {
-                $("#info_nombre").text(usuario.nombre);
-                $("#info_apellido").text(usuario.apellido);
-                $("#info_email").text(usuario.email);
-                var img =
-                  "http://images.marcelocaiafa.com/" + usuario.id + ".png";
-                $("#info_imagen").attr("src", img);
-                $("#info_dir").html(
-                  '<ons-icon icon="fa-map-marked"></ons-icon> ' +
-                    usuario.direccion
-                );
-                $("#info_tel").html(
-                  '<ons-icon icon="fa-mobile"></ons-icon> ' + usuario.telefono
-                );
-                $("#btn_eliminar_usuario").data("id", usuario.id);
-                
-                $("#addfavorito").on("click", function(){
-                  addFavorito(usuario.id,usuario.nombre,usuario.apellido);
-                });
               },
               complete: function() {
                 $("#modal_cargando").hide();
@@ -221,6 +215,7 @@
             });
           };
           ons.getScriptPage().onInit = function() {
+            $("#nr_tarjeta").text(this.data.usu);
             $(document).on("click", "#btn_eliminar_usuario", function() {
               var id = $(this).data("id");
               ons.notification
@@ -277,6 +272,8 @@
               </section>
        </ons-page>
        </template>
+           <!--JS local-->
+    <script src="functions.js"></script>
   </body>
 
   

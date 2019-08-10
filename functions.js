@@ -132,6 +132,32 @@ ons.ready(function(){
          }
       });
    });
+
+   $("#tarjeta").on("click", function(){
+      var usu = sessionStorage.getItem("usuario");
+      var id = sessionStorage.getItem("usuario_id");
+
+      datos = {
+       usuario:id,
+      };
+      console.log("holaaaa");
+      fn.load('t_billetera', {data:{"usu":usuario, "id":respuesta.id}});
+
+      //$.ajax({
+      //url:"http://oransh.develotion.com/login.php",
+      //data:JSON.stringify(datos),
+      //type:"POST",
+      //dataType:"json",
+      //success:function(respuesta){
+      //      console.log(respuesta.token);
+      //      //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
+      //      fn.load('t_billetera', {data:{"usu":usuario, "id":respuesta.id}});
+      //},
+      //error:function(xml, err, status){
+      //      ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
+      //   }
+      //});
+   });
 });
 
 

@@ -5,3 +5,6 @@ section{
 #mapid { 
     height: 400px; 
 }
+.list-item--material__thumbnail {
+    border-radius: 0% !important;
+}
