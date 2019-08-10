@@ -239,19 +239,19 @@ function cargarMonopatines(latitud, longitud, mymap){
       dataType:"json",
       success:function(response){
          var i =0;
-         // response.monopatines.forEach(element => {
-         //     var marker = L.marker([element.latitud, element.longitud]).addTo(mymap);
-         //    Aharv[i] = haversine(latitud,longitud,element);
-         //    Aelement[i] = element;
-         //    i++;
+         response.monopatines.forEach(element => {
+            //var marker = L.marker([element.latitud, element.longitud]).addTo(mymap);
+            Aharv[i] = haversine(latitud,longitud,element);
+            Aelement[i] = element;
+            i++;
 
-         // });
-         //bubbleSort(Aharv,Aelement)
+         });
+         bubbleSort(Aharv,Aelement)
 
-         // for (let index = 0; index < 5; index++) {
-         //    const ele = Aelement[index];
-         //    var marker = L.marker([ele.latitud, ele.longitud]).addTo(mymap);
-         // }
+         for (let index = 0; index < 5; index++) {
+            const ele = Aelement[index];
+            var marker = L.marker([ele.latitud, ele.longitud]).addTo(mymap);
+         }
       },
       error:function(xml, err, status){
          console.log(err);
