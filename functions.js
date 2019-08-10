@@ -229,3 +229,25 @@ function mensajes_usuarios(id){
        }
     });
 }
+function cargarMonopatines(latitud, longitud, mymap){
+   $("#modal_cargando").show();  
+   $.ajax({
+      url:"http://oransh.develotion.com/monopatines.php",
+      type:"GET",
+      dataType:"json",
+      success:function(response){
+         console.log("Itere");
+         response.monopatines.forEach(element => {
+            console.log("Itere");
+            console.log(element.latitud +" "+ element.longitud)
+            var marker = L.marker([element.latitud, element.longitud]).addTo(mymap);
+         });
+      },
+      error:function(xml, err, status){
+         console.log(err);
+      },
+      complete:function(){
+         $("#modal_cargando").hide();  
+      }
+   });
+}

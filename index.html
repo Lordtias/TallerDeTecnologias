@@ -287,7 +287,6 @@
                 </div>
             </section>
             <script>
-                
                 ons.getScriptPage().onShow = function () {
                     var mymap = L.map('mapid').setView([-34.911111, -56.164532], 13);
                     try{   
@@ -301,17 +300,11 @@
 
                         var marker = L.marker([-34.911111, -56.164532]).addTo(mymap);
 
-                        var circle = L.circle([-34.911111, -56.164532], {
-                                                                    color: 'red',
-                                                                    fillColor: '#f03',
-                                                                    fillOpacity: 0.5,
-                                                                    radius: 500
-                                                                }).addTo(mymap);
-                        var polygon = L.polygon([
-                                                    [-34.911111, -56.164532],
-                                                    [-34.901111, -56.154532],
-                                                    [-34.901111, -56.154532]
-                                                ]).addTo(mymap);
+                        var latitud = -34.911111;
+                        var longitud = -56.164532;
+
+                        cargarMonopatines(latitud,longitud,mymap);
+
                         var popup = L.popup();
 
                         
