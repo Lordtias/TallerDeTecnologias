@@ -59,7 +59,7 @@ window.fn.load = function(page, params) {
   menu.close();
   for (let index = 0; index < nav.pages.length; index++) {
      if(nav.pages[index]["id"] == p){
-        nav.replacePage(page,params);
+        nav.bringPageTop(page,params);
         return;
      }
   }
@@ -67,36 +67,6 @@ window.fn.load = function(page, params) {
 }
 
 ons.ready(function(){
-
-   $("#btn_registrar_usu").on("click", function(){
-        var usuario = $("#inp_usuario").val();
-        var password = $("#inp_pwd").val();
-        datos = {
-         usuario:usuario,
-         password:password
-        };
-        $.ajax({
-           url:"http://oransh.develotion.com/usuarios.php",
-           data:JSON.stringify(datos),
-           type:"POST",
-           dataType:"json",
-           success:function(respuesta){
-               $.ajaxSetup({
-                  headers:{
-                     token:respuesta.token
-                  }
-               });
-               console.log(respuesta.token);
-               //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
-               sessionStorage.setItem("usuario",usuario);
-               sessionStorage.setItem("usuario_id",respuesta.id);
-               fn.load('t_principal');
-           },
-           error:function(xml, err, status){
-               ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
-            }
-         });
-   });
 
    $("#btn_registrar").on("click", function(){
       var myNavigator = document.getElementById('nav');
@@ -112,7 +82,7 @@ ons.ready(function(){
       };      
       $.ajax({
       url:"http://oransh.develotion.com/login.php",
-      data:JSON.stringify(datos),
+      data:datos,
       type:"POST",
       dataType:"json",
       success:function(respuesta){

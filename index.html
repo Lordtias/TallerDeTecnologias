@@ -104,6 +104,39 @@
                     <ons-button id="btn_registrar_usu">Registrarse</ons-button>
                 </p>
             </section>
+            <script>
+                    ons.getScriptPage().onInit = function () {
+                        $("#btn_registrar_usu").on("click", function(){
+                        var usuario = $("#inp_usuario").val();
+                        var password = $("#inp_pwd").val();
+                        datos = {
+                        usuario:usuario,
+                        password:password
+                        };
+                        $.ajax({
+                        url:"http://oransh.develotion.com/usuarios.php",
+                        data:datos,
+                        type:"POST",
+                        dataType:"json",
+                        success:function(respuesta){
+                            $.ajaxSetup({
+                                headers:{
+                                    token:respuesta.token
+                                }
+                            });
+                            console.log(respuesta.token);
+                            //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
+                            sessionStorage.setItem("usuario",usuario);
+                            sessionStorage.setItem("usuario_id",respuesta.id);
+                            fn.load('t_principal');
+                        },
+                        error:function(xml, err, status){
+                            ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
+                            }
+                        });
+                    });
+                };
+            </script>
         </ons-page>
     </template>
 
