@@ -57,7 +57,7 @@
                     <ons-list-item onclick="fn.load('t_principal')" tappable >
                         Home
                     </ons-list-item>
-                    <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
+                    <ons-list-item onclick="fn.load('t_alquiler')" tappable>
                         <div class="left">
                             <img class="list-item__thumbnail" src="scooter.png">
                         </div>
@@ -72,7 +72,7 @@
                     <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
                         Historico de Viajes
                     </ons-list-item>
-                    <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
+                    <ons-list-item onclick="fn.load('t_login')" tappable>
                         Cerrar Sesion
                     </ons-list-item>
                 </ons-list>
@@ -320,8 +320,11 @@
                 </div>
             </section>
             <script>
+                ons.getScriptPage().onInit = function () {
+                    mymap = L.map('mapid').setView([-34.911111, -56.164532], 13);
+                }
+
                 ons.getScriptPage().onShow = function () {
-                    var mymap = L.map('mapid').setView([-34.911111, -56.164532], 13);
                     try{   
 
                         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
@@ -332,29 +335,15 @@
                         }).addTo(mymap);
 
                         var marker = L.marker([-34.911111, -56.164532]).addTo(mymap);
-
+                        console.log(marker);
                         var latitud = -34.911111;
                         var longitud = -56.164532;
 
                         cargarMonopatines(latitud,longitud,mymap);
-
-                        var popup = L.popup();
-
-                        
                     }
                     catch(e){
                         console.log("Hola: "+e.message);
                     }
-                    
-                    function onMapClick(e) {
-                        console.log("CLic")
-                                popup
-                                    .setLatLng(e.latlng)
-                                    .setContent("You clicked the map at " + e.latlng.toString())
-                                    .openOn(mymap);
-                            }
-
-                    mymap.on('click', onMapClick);
                 };
             </script>
         </ons-page>

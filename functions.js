@@ -1,5 +1,6 @@
  var htmlMensaje;
- 
+ var mymap={};
+
  function mostrarDialog() {
    var dialog = document.getElementById('my-dialog');
  
@@ -203,6 +204,7 @@ function cargarMonopatines(latitud, longitud, mymap){
    $("#modal_cargando").show();
    var Aharv =[];
    var Aelement = [];
+   var markerGroup = null;
    $.ajax({
       url:"http://oransh.develotion.com/monopatines.php",
       type:"GET",
@@ -218,9 +220,17 @@ function cargarMonopatines(latitud, longitud, mymap){
          });
          bubbleSort(Aharv,Aelement)
 
+         markerGroup = L.layerGroup().addTo(mymap);
+
          for (let index = 0; index < 5; index++) {
             const ele = Aelement[index];
-            var marker = L.marker([ele.latitud, ele.longitud]).addTo(mymap);
+            var marker = L.marker([ele.latitud, ele.longitud]).addTo(markerGroup)
+            .on('click', function(e){
+               console.log(e);
+               markerGroup.removeLayer(e.target._leaflet_id)
+            })
+            
+            //console.log(marker);
          }
       },
       error:function(xml, err, status){
