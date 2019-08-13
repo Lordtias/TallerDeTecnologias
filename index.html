@@ -123,11 +123,11 @@
                                 headers:{
                                     token:respuesta.token
                                 }
-                            });
-                            console.log(respuesta.token);
+                            })
                             //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
                             sessionStorage.setItem("usuario",usuario);
                             sessionStorage.setItem("usuario_id",respuesta.id);
+                            console.log("TOOOKENNN: " + token.toString())
                             fn.load('t_principal');
                         },
                         error:function(xml, err, status){
@@ -211,6 +211,9 @@
                             usuario: id,
                         };
                         console.log("Billetera");
+                        console.log(id)
+                        console.log(usuario)
+                        
                         fn.load('t_billetera', { data: { "usu": usuario, "id": id } });
                     });
 
@@ -241,8 +244,8 @@
                     <div class="content" style="text-align: center">
                         <label for="nr_tarjeta">Numero de Tarjeta</label>
                         <p id="nr_tarjeta">1232 3453 3456 2345</p>
-                        <label for="nr_tarjeta">Saldo</label>
-                        <p id="nr_tarjeta">$ 3.456</p>
+                        <label for="nr_saldo_tarjeta">Saldo</label>
+                        <p id="nr_saldo_tarjeta">$ 3.456</p>
                         <p>
                             <ons-button id="btn_agregar_saldo" data-id="">Agregar saldo</ons-button>
                         </p>
@@ -257,53 +260,95 @@
             </section>
             <script>
                 ons.getScriptPage().onShow = function () {
-                    $("#spn_cargando").text("Cargando info de usuario...");
-                    $("#modal_cargando").show();
-                    var id = this.data.id;
-                    $.ajax({
-                        url: "http://marcelocaiafa.com/usuario.php",
-                        type: "GET",
-                        dataType: "json",
-                        data: { id: id },
-                        success: function (usuario) {
-                        },
-                        complete: function () {
-                            $("#modal_cargando").hide();
-                        }
-                    });
+                    // $("#spn_cargando").text("Cargando info de usuario...");
+                    // $("#modal_cargando").show();
+                    // var id = this.data.id;
+                    // $.ajax({
+                    //     url: "http://marcelocaiafa.com/usuario.php",
+                    //     type: "GET",
+                    //     dataType: "json",
+                    //     data: { id: id },
+                    //     success: function (usuario) {
+                    //     },
+                    //     complete: function () {
+                    //         $("#modal_cargando").hide();
+                    //     }
+                    // });
                 };
+
                 ons.getScriptPage().onInit = function () {
                     $("#nr_tarjeta").text(this.data.usu);
-                    $(document).on("click", "#btn_eliminar_usuario", function () {
-                        var id = $(this).data("id");
-                        ons.notification
-                            .confirm("Confirma que desea eliminar el usuario?", {
-                                buttonLabels: ["SI", "NO"],
-                                title: "Eliminar usuario"
-                            })
-                            .then(function (respuesta) {
-                                if (respuesta == 0) {
-                                    $("#spn_cargando").text("Eliminando info de usuario...");
-                                    $("#modal_cargando").show();
-                                    $.ajax({
-                                        url: "http://marcelocaiafa.com/usuario.php",
-                                        type: "DELETE",
-                                        data: JSON.stringify({ id: id }),
-                                        dataType: "json",
-                                        success: function () {
-                                            var myNavigator = document.getElementById("nav");
-                                            myNavigator.popPage({
-                                                data: {
-                                                    mensaje: "El usuario se ha eliminado correctamente"
-                                                }
-                                            });
-                                        },
-                                        complete: function () {
-                                            $("#modal_cargando").hide();
-                                        }
-                                    });
+                    console.log(this.data.id);
+                    var id = this.data.id;
+                    console.log(token);
+
+                    $(document).on("click", "#btn_agregar_tarjeta", function () {
+                        var numero = "";
+
+                        ons.notification.prompt("Numero de la tarjeta:")
+                        .then(function(input){
+                            numero = input;
+
+                            $("#spn_cargando").text("Agregando una tarjeta ...");
+                            $("#modal_cargando").show();
+
+                            $.ajaxSetup({
+                                headers:{
+                                    token: token
                                 }
                             });
+
+                            $.ajax({
+                                url: "http://oransh.develotion.com/tarjetas.php",
+                                type: "POST",
+                                data: { id: id, numero: numero },
+                                dataType: "json",
+                                success: function (respuesta) {
+                                    $("nr_saldo_tarjeta").text(respuesta.saldo);
+                                    ons.notification
+                                    .alert("Se ah agregado correctamente la tarjeta!")
+                                },
+                                complete: function () {
+                                    $("#modal_cargando").hide();
+                                }
+                            });
+                        })
+
+                    });
+
+                    $(document).on("click", "#btn_eliminar_tarjeta", function () {
+                        //var id = $(this).data("id");
+                        
+                        if (! usuandoMonopatin){
+                            ons.notification
+                                .confirm("¿Confirma que desea eliminar la tarjeta?", {
+                                    buttonLabels: ["SI", "NO"],
+                                    title: "Eliminar Tarjeta"
+                                })
+                                .then(function (respuesta) {
+                                    if (respuesta == 0) {
+                                        $("#spn_cargando").text("Eliminando su tarjeta...");
+                                        $("#modal_cargando").show();
+                                        $.ajax({
+                                            url: "http://oransh.develotion.com/tarjetas.php",
+                                            type: "DELETE",
+                                            data: { id: id },
+                                            dataType: "json",
+                                            success: function () {
+                                                ons.notification
+                                                .alert("Se ah eliminado correctamente la tarjeta!")
+                                            },
+                                            complete: function () {
+                                                $("#modal_cargando").hide();
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            else{
+                                ons.notification
+                                .alert("No puede eliminar la tarjeta, estas usando un monopatin!")
+                            }
                     });
                 };
             </script>
@@ -335,7 +380,6 @@
                         }).addTo(mymap);
 
                         var marker = L.marker([-34.911111, -56.164532]).addTo(mymap);
-                        console.log(marker);
                         var latitud = -34.911111;
                         var longitud = -56.164532;
 

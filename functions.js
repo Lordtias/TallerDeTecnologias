@@ -1,5 +1,7 @@
  var htmlMensaje;
  var mymap={};
+ var usuandoMonopatin = false;
+ var token = null;
 
  function mostrarDialog() {
    var dialog = document.getElementById('my-dialog');
@@ -93,6 +95,7 @@ ons.ready(function(){
                }
             });
             console.log(respuesta.token);
+            token = respuesta.token;
             //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
             sessionStorage.setItem("usuario",usuario);
             sessionStorage.setItem("usuario_id",respuesta.id);
@@ -114,20 +117,20 @@ ons.ready(function(){
       console.log("holaaaa");
       fn.load('t_billetera', {data:{"usu":usuario, "id":respuesta.id}});
 
-      //$.ajax({
-      //url:"http://oransh.develotion.com/login.php",
-      //data:JSON.stringify(datos),
-      //type:"POST",
-      //dataType:"json",
-      //success:function(respuesta){
-      //      console.log(respuesta.token);
-      //      //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
-      //      fn.load('t_billetera', {data:{"usu":usuario, "id":respuesta.id}});
-      //},
-      //error:function(xml, err, status){
-      //      ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
-      //   }
-      //});
+      $.ajax({
+      url:"http://oransh.develotion.com/login.php",
+      data:datos,
+      type:"POST",
+      dataType:"json",
+      success:function(respuesta){
+           console.log(respuesta);
+           //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
+           fn.load('t_billetera', {data:{"usu":usuario, "id":respuesta.id}});
+      },
+      error:function(xml, err, status){
+           ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
+        }
+      });
    });
 });
 
@@ -225,6 +228,7 @@ function cargarMonopatines(latitud, longitud, mymap){
          for (let index = 0; index < 5; index++) {
             const ele = Aelement[index];
             var marker = L.marker([ele.latitud, ele.longitud]).addTo(markerGroup)
+            //Esta funcion cambiarla a alquilar el monopatin.
             .on('click', function(e){
                console.log(e);
                markerGroup.removeLayer(e.target._leaflet_id)
