@@ -79,10 +79,15 @@ ons.ready(function(){
    $("#btn_login").on("click", function(){
       var usuario = $("#inp_login_usuario").val();
       var password = $("#inp_login_pwd").val();
+      
       datos = {
-       usuario:usuario,
-       password:password
-      };      
+         usuario:usuario,
+         password:password
+      };
+
+      $("#spn_cargando").text("Autentificando usuario ...");
+      $("#modal_cargando").show();
+
       $.ajax({
       url:"http://oransh.develotion.com/login.php",
       data:datos,
@@ -94,16 +99,18 @@ ons.ready(function(){
                   token:respuesta.token
                }
             });
-            console.log(respuesta.token);
-            token = respuesta.token;
+            console.log(respuesta);
             //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
-            sessionStorage.setItem("usuario",usuario);
+            sessionStorage.setItem("usuario_nombre",usuario);
             sessionStorage.setItem("usuario_id",respuesta.id);
             fn.load('t_principal');
       },
       error:function(xml, err, status){
             ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
-         }
+         },
+      complete: function () {
+            $("#modal_cargando").hide();
+      }
       });
    });
 

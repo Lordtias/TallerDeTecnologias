@@ -28,12 +28,16 @@
 
     <!--Hoja de estilo Local-->
     <link rel="stylesheet" href="styles.css" />
+
     <!--JS local-->
     <script src="functions.js"></script>
+
     <!--Base SQLITE local-->
     <script src="db.js"></script>
     
-    <!-- <script src="mapa.js"></script> -->
+    <!--Validador de tarjetas local-->
+    <script src="validadorTarjetas.js"></script>
+    
 
 </head>
 
@@ -88,9 +92,9 @@
     <!---------------------------------------------------------------------------------------------------->
     <template id="t_registro">
         <ons-page id="p_registro">
-            <section>
+            <section style="text-align: center; margin-top: 40%;">
                 <h1>Registro de Usuario</h1>
-                <label for="inp_usuario">Usuario:</label>
+                <label for="inp_usuario">Usuario</label>
                 <p>
                     <input class="text-input text-input--material" type="text" id="inp_usuario"
                         placeholder="Ingrese usuario" />
@@ -143,7 +147,7 @@
     <!---------------------------------------------------------------------------------------------------->
     <template id="t_login">
         <ons-page id="p_login">
-            <section>
+            <section style="text-align: center; margin-top: 40%;">
                 <h1>Login de Usuario</h1>
                 <label for="inp_login_usuario"></label>
                 <p>
@@ -162,7 +166,7 @@
             </section>
         </ons-page>
 
-        <!---------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------->
     </template>
     <template id="t_principal">
         <ons-page id="p_principal">
@@ -182,142 +186,169 @@
                 </p>
                 <ons-list id="l_principal"></ons-list>
             </section>
-            <!--https://onsen.io/v2/guide/lifecycle.html-->
             <script>
-                ons.getScriptPage().onShow = function () {
-                    console.log("onShow Principal")
-
-                    // if (this.data) {
-                    //     var mensaje = this.data.mensaje;
-                    //     if (mensaje) {
-                    //         ons.notification.toast(mensaje, { timeout: 3000 });
-                    //     }
-                    // }
-
-                };
-
                 ons.getScriptPage().onInit = function () {
-                    console.log("onInit Principal")
-                    var usuario = sessionStorage.getItem("usuario");
-                    var id = sessionStorage.getItem("usuario_id");
-                    
-                    //usuario = JSON.parse(usuario);
-                    //$("#saludo").html("Hola <strong>" + usuario.nombre + "</strong>!");
+                    var usuario     = sessionStorage.getItem("usuario_nombre");
+                    //var usu       = JSON.parse(usuario);
+                    //var id        = usu.id;
+                    var id          = sessionStorage.getItem("usuario_id");
                     
                     $("#saludo").html("Hola <strong>" + usuario + "</strong>!");
 
                     $("#tarjeta").on("click", function () {
-                        datos = {
-                            usuario: id,
-                        };
-                        console.log("Billetera");
-                        console.log(id)
-                        console.log(usuario)
-                        
                         fn.load('t_billetera', { data: { "usu": usuario, "id": id } });
                     });
 
                     $("#scooter").on("click", function () {
-                        datos = {
-                            usuario: id,
-                        };
-                        console.log("scooter");
                         fn.load('t_alquiler', { data: { "usu": usuario, "id": id } });
                     });
-
                 };
 
             </script>
         </ons-page>
     </template>
 
-    <!---------------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------------->
     <template id="t_billetera">
         <ons-page id="p_billetera">
             <section>
                 <h1 style="text-align: center">Billetera</h1>
                 <ons-card>
-                    <img src="wallet.png" style="width: 100%; height: auto;" id="info_imagen" />
+                    <img src="tarjeta.png" style="width: 100%; height: auto;" id="imagen_tarjeta" />
                     <div class="title">
                         <span id="info_nombre"></span> <span id="info_apellido"></span>
                     </div>
                     <div class="content" style="text-align: center">
-                        <label for="nr_tarjeta">Numero de Tarjeta</label>
-                        <p id="nr_tarjeta">1232 3453 3456 2345</p>
-                        <label for="nr_saldo_tarjeta">Saldo</label>
-                        <p id="nr_saldo_tarjeta">$ 3.456</p>
-                        <p>
-                            <ons-button id="btn_agregar_saldo" data-id="">Agregar saldo</ons-button>
-                        </p>
-                        <p>
-                            <ons-button modifier="outline large" id="btn_eliminar_tarjeta" data-id="">Eliminar
-                            </ons-button>
-                            <ons-button modifier="outline large" id="btn_agregar_tarjeta" data-id="">Agregar
-                            </ons-button>
-                        </p>
+                        <div style="box-shadow: 5px 5px 5px 1px gray;">
+                            <h4>Informacion de la tarjeta</h3>
+                            <table style="width:100%">
+                                <tr>
+                                    <th>NUMERO</th>
+                                    <th>SALDO</th>
+                                </tr>
+                                <tr>
+                                    <td><p id="nr_tarjeta"></p></td>
+                                    <td><p id="nr_saldo_tarjeta">$ </p></td>
+                                </tr>
+                                </table>
+                            <p>
+                                <ons-button style="margin-bottom: 5px" id="btn_agregar_saldo" data-id="">Agregar saldo</ons-button>
+                            </p>
+                        </div>
+                        <br>
+                        <div style="box-shadow: 5px 5px 5px 1px gray;">
+                            <h3>Tarjeta</h3>
+                            <p>
+                                <ons-button modifier="outline" id="btn_eliminar_tarjeta" data-id="">Eliminar
+                                </ons-button>
+                                <ons-button modifier="outline" id="btn_agregar_tarjeta" data-id="">Agregar
+                                </ons-button>
+                            </p>
+                        </div>
                     </div>
                 </ons-card>
             </section>
             <script>
+                var usuario     = sessionStorage.getItem("usuario_nombre");
+                //var usu       = JSON.parse(usuario);
+                //var id        = usu.id;
+                var id          = sessionStorage.getItem("usuario_id");
+
                 ons.getScriptPage().onShow = function () {
-                    // $("#spn_cargando").text("Cargando info de usuario...");
-                    // $("#modal_cargando").show();
-                    // var id = this.data.id;
-                    // $.ajax({
-                    //     url: "http://marcelocaiafa.com/usuario.php",
-                    //     type: "GET",
-                    //     dataType: "json",
-                    //     data: { id: id },
-                    //     success: function (usuario) {
-                    //     },
-                    //     complete: function () {
-                    //         $("#modal_cargando").hide();
-                    //     }
-                    // });
+                    $("#spn_cargando").text("Actualizando saldo ...");
+                    $("#modal_cargando").show();
+
+                    $.ajax({
+                        url: "http://oransh.develotion.com/tarjetas.php",
+                        type: "GET",
+                        dataType: "json",
+                        data: { id: id },
+                        success: function (respuesta) {
+                            var tarjeta = validarTarjetaDeCredito(respuesta.numero);
+                            if(tarjeta){
+                                document.getElementById("imagen_tarjeta").src=tarjeta.img;
+                                $("#nr_tarjeta").text(respuesta.numero);
+                                $("#nr_saldo_tarjeta").html("$ <strong>"+respuesta.saldo+"</strong>");
+                            }
+                        },
+                        complete: function () {
+                            $("#modal_cargando").hide();
+                        }
+                    });
                 };
 
                 ons.getScriptPage().onInit = function () {
-                    $("#nr_tarjeta").text(this.data.usu);
-                    console.log(this.data.id);
-                    var id = this.data.id;
-                    console.log(token);
+
+                    $(document).on("click", "#btn_agregar_saldo", function () {
+                        var saldo = "";
+
+                        ons.notification.prompt("Escriba el monto:",{title:"ACREDITAR"})
+                        .then(function(input){
+                            saldo = input;
+
+                            if(!(saldo%100)==0){
+                                ons.notification.alert('El saldo debe de ser multiplo de 100!',{title:"ERROR!"});
+                            }
+                            else{
+                                $("#spn_cargando").text("Agregando una tarjeta ...");
+                                $("#modal_cargando").show();
+
+                                $.ajax({
+                                    url: "http://oransh.develotion.com/tarjetas.php",
+                                    type: "PUT",
+                                    data: { id: id, saldo: saldo },
+                                    dataType: "json",
+                                    success: function (respuesta) {
+                                        $("#nr_saldo_tarjeta").html("$ <strong>"+respuesta.saldo+"</strong>");
+                                        ons.notification
+                                        .alert("Se ah acreditado correctamente el saldo!",{title:"EXITO!"})
+                                    },
+                                    complete: function () {
+                                        $("#modal_cargando").hide();
+                                    }
+                                });
+                            }
+                        })
+
+                    });
 
                     $(document).on("click", "#btn_agregar_tarjeta", function () {
                         var numero = "";
 
-                        ons.notification.prompt("Numero de la tarjeta:")
+                        ons.notification.prompt("Numero de la tarjeta:",{title:"AGREGAR TARJETA"})
                         .then(function(input){
                             numero = input;
+                            var tarjeta = validarTarjetaDeCredito(numero);
+                            if(!tarjeta){
+                                ons.notification
+                                .alert("Numero de la tarjeta Invalido!",{title:"ERROR!"})
+                            }
+                            else{
+                                $("#spn_cargando").text("Agregando una tarjeta ...");
+                                $("#modal_cargando").show();
 
-                            $("#spn_cargando").text("Agregando una tarjeta ...");
-                            $("#modal_cargando").show();
-
-                            $.ajaxSetup({
-                                headers:{
-                                    token: token
-                                }
-                            });
-
-                            $.ajax({
-                                url: "http://oransh.develotion.com/tarjetas.php",
-                                type: "POST",
-                                data: { id: id, numero: numero },
-                                dataType: "json",
-                                success: function (respuesta) {
-                                    $("#nr_saldo_tarjeta").text(respuesta.saldo);
-                                    ons.notification
-                                    .alert("Se ah agregado correctamente la tarjeta!")
-                                },
-                                complete: function () {
-                                    $("#modal_cargando").hide();
-                                }
-                            });
+                                $.ajax({
+                                    url: "http://oransh.develotion.com/tarjetas.php",
+                                    type: "POST",
+                                    data: { id: id, numero: numero },
+                                    dataType: "json",
+                                    success: function (respuesta) {
+                                        document.getElementById("imagen_tarjeta").src=tarjeta.img;
+                                        $("#nr_tarjeta").text(numero);
+                                        $("#nr_saldo_tarjeta").html("$ <strong>"+respuesta.saldo+"</strong>");
+                                        ons.notification
+                                        .alert("Se ah agregado correctamente la tarjeta!",{title:"EXITO!"})
+                                    },
+                                    complete: function () {
+                                        $("#modal_cargando").hide();
+                                    }
+                                });
+                            }
                         })
 
                     });
 
                     $(document).on("click", "#btn_eliminar_tarjeta", function () {
-                        //var id = $(this).data("id");
                         
                         if (! usuandoMonopatin){
                             ons.notification
@@ -335,8 +366,11 @@
                                             data: { id: id },
                                             dataType: "json",
                                             success: function () {
+                                                document.getElementById("imagen_tarjeta").src="tarjeta.png";
+                                                $("#nr_tarjeta").text("");
+                                                $("#nr_saldo_tarjeta").html("$ -");
                                                 ons.notification
-                                                .alert("Se ah eliminado correctamente la tarjeta!")
+                                                .alert("Se ah eliminado correctamente la tarjeta!",{title:"EXITO!"})
                                             },
                                             complete: function () {
                                                 $("#modal_cargando").hide();
@@ -347,7 +381,7 @@
                             }
                             else{
                                 ons.notification
-                                .alert("No puede eliminar la tarjeta, estas usando un monopatin!")
+                                .alert("No puede eliminar la tarjeta, estas usando un monopatin!",{title:"ERROR!"})
                             }
                     });
                 };
