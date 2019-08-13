@@ -304,7 +304,7 @@
                                 data: { id: id, numero: numero },
                                 dataType: "json",
                                 success: function (respuesta) {
-                                    $("nr_saldo_tarjeta").text(respuesta.saldo);
+                                    $("#nr_saldo_tarjeta").text(respuesta.saldo);
                                     ons.notification
                                     .alert("Se ah agregado correctamente la tarjeta!")
                                 },
