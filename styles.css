@@ -2,23 +2,20 @@ section{
     padding-right: 8px;
     padding-left: 8px;
 }
-#mapid { 
-    height: 400px; 
-}
 .list-item--material__thumbnail {
     border-radius: 0% !important;
 }
 .bordes{
     box-shadow: 5px 5px 5px 0px grey;
 }
-#mapid { height: 100%;
+#mapid { height: 230px;
     width: 100%; 
 }
 .map-responsive{
     overflow:hidden;
     padding-bottom:56.25%;
     position:relative;
-    height:0;
+    height:230px;
 }
 .map-responsive #mapid{
     left:0;

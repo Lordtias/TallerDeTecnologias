@@ -230,7 +230,15 @@ function cargarMonopatines(latitud, longitud, mymap){
          });
          bubbleSort(Aharv,Aelement)
 
+         markerGroup = null;
+         console.log(markerGroup);
+         console.log("Tendria que haber sido nuol");
          markerGroup = L.layerGroup().addTo(mymap);
+         console.log(markerGroup);
+         
+         console.log("No Tendria que haber sido nuol");
+         
+         markerGroup.clearLayers();
 
          for (let index = 0; index < 5; index++) {
             const ele = Aelement[index];
@@ -238,7 +246,8 @@ function cargarMonopatines(latitud, longitud, mymap){
             //Esta funcion cambiarla a alquilar el monopatin.
             .on('click', function(e){
                console.log(e);
-               markerGroup.removeLayer(e.target._leaflet_id)
+               //markerGroup.removeLayer(e.target._leaflet_id)
+               fn.load('t_scooter', {data:{"mono":Aelement[index]}});
             })
             
             //console.log(marker);
