@@ -2,6 +2,9 @@
  var mymap={};
  var usuandoMonopatin = false;
  var token = null;
+ var costo_segundo = 2;
+ var costo_inicio = 46;
+ var markerGroup = new L.LayerGroup();
 
  function mostrarDialog() {
    var dialog = document.getElementById('my-dialog');
@@ -214,7 +217,8 @@ function cargarMonopatines(latitud, longitud, mymap){
    $("#modal_cargando").show();
    var Aharv =[];
    var Aelement = [];
-   var markerGroup = null;
+   markerGroup.clearLayers();
+
    $.ajax({
       url:"http://oransh.develotion.com/monopatines.php",
       type:"GET",
@@ -229,14 +233,6 @@ function cargarMonopatines(latitud, longitud, mymap){
 
          });
          bubbleSort(Aharv,Aelement)
-
-         markerGroup = null;
-         console.log(markerGroup);
-         console.log("Tendria que haber sido nuol");
-         markerGroup = L.layerGroup().addTo(mymap);
-         console.log(markerGroup);
-         
-         console.log("No Tendria que haber sido nuol");
          
          markerGroup.clearLayers();
 
@@ -252,6 +248,8 @@ function cargarMonopatines(latitud, longitud, mymap){
             
             //console.log(marker);
          }
+         
+         markerGroup.addTo(mymap);
       },
       error:function(xml, err, status){
          console.log(err);
@@ -280,6 +278,7 @@ function haversine(latitud, longitud,element){
 
    return R * c;
 }
+
 function bubbleSort(Aharv, Aelement) 
 { 
     var n = Aharv.length; 
@@ -307,4 +306,30 @@ function bubbleSort(Aharv, Aelement)
             } 
         } 
     }
-} 
+}
+
+function getTime(stage){
+   var fecha = new Date();
+   if(stage == 'Inicio'){
+      sessionStorage.setItem("f_Ini",fecha.getTime());
+   }
+   if(stage == 'Fin'){
+      sessionStorage.setItem("f_Fin",fecha.getTime());
+   }
+   return   "<strong>Fecha: </strong>"+fecha.getDate()+"/"+fecha.getMonth()+"/"+fecha.getFullYear()+
+            " - <strong>Hora: </strong>"+fecha.getHours()+":"+fecha.getMinutes()+":"+fecha.getSeconds()
+}
+
+function getDuracion(){
+   var f_Ini = sessionStorage.getItem("f_Ini");
+   var f_Fin = sessionStorage.getItem("f_Fin");
+   
+   const diffTime = Math.abs(f_Fin - f_Ini);
+   const diffSegundos = Math.ceil(diffTime / (1000));
+   
+   return diffSegundos
+}
+
+function getCosto(segundos){
+   return (segundos * costo_segundo) + costo_inicio; 
+}

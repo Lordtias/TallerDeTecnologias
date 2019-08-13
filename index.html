@@ -476,9 +476,9 @@
                 <ons-card id="factura" style="display: none">
                     <h2>Importe final</h2>
                     <label for="f_ini">Inicio del Viaje</label>
-                    <p id="f_ini"></p>
+                    <p id="f_ini" style="text-align: center"></p>
                     <label for="f_fin">Final del Viaje</label>
-                    <p id="f_fin"></p>
+                    <p id="f_fin" style="text-align: center"></p>
                     <label for="t_costo">Costo</label>
                     <table id="t_costo" style="width:100%">
                         <tr>
@@ -508,11 +508,15 @@
 
                     $('#btn_alquilar').on('click',function(){
                         $("#modal_alquilando").show();
+                        $('#f_ini').html(getTime('Inicio'))
                     });
 
                     $('#btn_terminar_viaje').on('click',function(){
                         $("#modal_alquilando").hide();
                         document.getElementById("factura").style.display="";
+                        $('#f_fin').html(getTime('Fin'))
+                        $('#duracion_viaje').text(getDuracion())
+                        $('#costo_viaje').html("$ <strong>"+getCosto(getDuracion())+"</strong>")
                     });
 
                 }
