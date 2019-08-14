@@ -64,6 +64,18 @@
             </div>
         </ons-modal>
 
+
+    <ons-modal direction="up" id="modal_validando">
+        <div style="text-align: center">
+            <p>
+                <ons-icon icon="md-spinner" size="38px" spin></ons-icon>
+                <span id="spn_cargando"> Validando saldo ...</span>
+              
+                    </ons-button>
+            </p>
+        </div>
+    </ons-modal>
+
     <ons-splitter>
 
         <ons-splitter-side id="menu" side="left" width="220px" collapse swipeable>
@@ -507,8 +519,17 @@
                     $('#codigo_mono').text(this.data.mono.codigo);
 
                     $('#btn_alquilar').on('click',function(){
-                        $("#modal_alquilando").show();
+                       // $("#modal_validando").show();
+                        if(validarSaldo(id) == true){
+                      //      $("#modal_validando").hide();
+                        
+                            $("#modal_alquilando").show();
                         $('#f_ini').html(getTime('Inicio'))
+                    }else{
+                       // $("#modal_validando").hide();
+                        
+                        ons.notification.alert('Saldo insuficiente. Debe realizar una recarga para continuar',{title:"Saldo Insuficiente!"});
+                    }
                     });
 
                     $('#btn_terminar_viaje').on('click',function(){
