@@ -180,7 +180,18 @@ function cargarMonopatines(latitud, longitud, mymap){
    var Aharv =[];
    var Aelement = [];
    markerGroup.clearLayers();
-
+   var scooterIcon = L.icon({
+      iconUrl: 'scooter_icon.png',
+      iconSize: [32, 32],
+      iconAnchor: [32, 32],
+      popupAnchor: [-3, -76]
+   });
+   var scooterBatteryIcon = L.icon({
+      iconUrl: 'scooter_b_icon.png',
+      iconSize: [32, 32],
+      iconAnchor: [32, 32],
+      popupAnchor: [-3, -76]
+   });
    $.ajax({
       url:"http://oransh.develotion.com/monopatines.php",
       type:"GET",
@@ -200,8 +211,8 @@ function cargarMonopatines(latitud, longitud, mymap){
 
          for (let index = 0; index < 5; index++) {
             const ele = Aelement[index];
-            var marker = L.marker([ele.latitud, ele.longitud]).addTo(markerGroup)
-            
+            if(Aelement[index].bateria >40) var marker = L.marker([ele.latitud, ele.longitud], {icon: scooterIcon}).addTo(markerGroup)
+            else  var marker = L.marker([ele.latitud, ele.longitud], {icon: scooterBatteryIcon}).addTo(markerGroup)
             .on('click', function(e){
                console.log(e);
                //markerGroup.removeLayer(e.target._leaflet_id)

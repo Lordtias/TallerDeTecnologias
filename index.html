@@ -564,7 +564,13 @@
                                 lat = pos.coords.latitude;
                                 lng = pos.coords.longitude;
                                 device = [Number(lat), Number(lng)];
-                                var marker = L.marker(device).addTo(mymap);
+                                var myIcon = L.icon({
+                                                        iconUrl: 'alien_icon.png',
+                                                        iconSize: [32, 32],
+                                                        iconAnchor: [32, 32],
+                                                        popupAnchor: [-3, -76]
+                                                    });
+                                var marker = L.marker(device, {icon: myIcon}).addTo(mymap);
                             
                                 cargarMonopatines(Number(lat), Number(lng),mymap);
     
