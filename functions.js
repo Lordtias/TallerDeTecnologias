@@ -4,7 +4,7 @@
  var token = null;
  var costo_segundo = 2;
  var costo_inicio = 46;
- var markerGroup = new L.LayerGroup();
+ var markerGroup;
  var flag;
 
  function mostrarDialog() {
@@ -106,8 +106,6 @@ ons.ready(function(){
    // });
 });
 
-
-
 function enviarMensaje() {
    var receptor = $("#mensajeUsuario option:selected").val();
    var mEnsaje = $("#mensajeHtml").val();
@@ -178,21 +176,26 @@ function mensajes_usuarios(id){
 function cargarMonopatines(latitud, longitud, mymap){
    $("#spn_cargando").text("Buscando monopatines mas cercanos ...");
    $("#modal_cargando").show();
-   var Aharv =[];
+
+   var Aharv = [];
    var Aelement = [];
+
    markerGroup.clearLayers();
+
    var scooterIcon = L.icon({
       iconUrl: 'scooter_icon.png',
       iconSize: [32, 32],
       iconAnchor: [32, 32],
       popupAnchor: [-3, -76]
    });
+
    var scooterBatteryIcon = L.icon({
       iconUrl: 'scooter_b_icon.png',
       iconSize: [32, 32],
       iconAnchor: [32, 32],
       popupAnchor: [-3, -76]
    });
+
    $.ajax({
       url:"http://oransh.develotion.com/monopatines.php",
       type:"GET",
@@ -215,7 +218,6 @@ function cargarMonopatines(latitud, longitud, mymap){
             if(Aelement[index].bateria >40){
                var marker = L.marker([ele.latitud, ele.longitud], {icon: scooterIcon}).addTo(markerGroup)
                .on('click', function(e){
-                  console.log(e);
                   //markerGroup.removeLayer(e.target._leaflet_id)
                   fn.load('t_scooter', {data:{"mono":Aelement[index]}});
                })
@@ -223,13 +225,10 @@ function cargarMonopatines(latitud, longitud, mymap){
             else{
                var marker = L.marker([ele.latitud, ele.longitud], {icon: scooterBatteryIcon}).addTo(markerGroup)
                .on('click', function(e){
-                  console.log(e);
                   //markerGroup.removeLayer(e.target._leaflet_id)
                   fn.load('t_scooter', {data:{"mono":Aelement[index]}});
                })
-            }  
-            
-            //console.log(marker);
+            }
          }
          
          markerGroup.addTo(mymap);
@@ -248,10 +247,7 @@ function toRadians(x){
 }
 
 function haversine(latitud, longitud,element){
-  console.log(latitud);
-  console.log(longitud);
-   
-  var R = 6371e3; // metres
+   var R = 6371e3; // metres
    var lat1 = toRadians(latitud);
    var lat2 = toRadians(element.latitud);
    var delta1 = toRadians((element.latitud-latitud));

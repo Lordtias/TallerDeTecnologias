@@ -548,6 +548,7 @@
             <script>
                 ons.getScriptPage().onInit = function () {
                     mymap = L.map('mapid').setView([-34.911111, -56.164532], 13);
+                    markerGroup = new L.LayerGroup();
                 }
 
                 ons.getScriptPage().onShow = function () {
