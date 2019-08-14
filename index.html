@@ -287,6 +287,12 @@
                 <div class="left">
                     <ons-toolbar-button icon="fa-bars" onclick="fn.open()"></ons-toolbar-button>
                 </div>
+                <div class="center titulo-barra">
+                    
+                </div>
+                <div class="right">
+                    <img class="list-item__thumbnail" src="home.png">
+                </div>
             </ons-toolbar>
             <section>
                 <h1 style="text-align: center">Quelotines Inc.</h1>
@@ -309,9 +315,14 @@
                 <div class="left">
                     <ons-toolbar-button icon="fa-bars" onclick="fn.open()"></ons-toolbar-button>
                 </div>
+                <div class="center titulo-barra">
+                    Billetera
+                </div>
+                <div class="right">
+                    <img class="list-item__thumbnail" src="tarjeta.png">
+                </div>
             </ons-toolbar>
             <section>
-                <h1 style="text-align: center">Billetera</h1>
                 <ons-card>
                     <img src="tarjeta.png" style="width: 100%; height: auto;" id="imagen_tarjeta" />
                     <div class="title">
@@ -510,8 +521,19 @@
     <!---------------------------------------------------------------------------------------------------->
     <template id="t_alquiler">
         <ons-page id="p_alquiler">
+            <ons-toolbar>
+                    <div class="left">
+                        <ons-toolbar-button icon="fa-bars" onclick="fn.open()"></ons-toolbar-button>
+                    </div>
+                    <div class="center titulo-barra">
+                        Monopatines
+                    </div>
+                    <div class="right">
+                        <img class="list-item__thumbnail" src="scooter.png">
+                    </div>
+                </ons-toolbar>
             <section style="text-align: center">
-                <h1>Selecciona el Monopatin</h1>
+                <h2>Selecciona el Monopatin</h2>
                 <ons-card>
                     <div class="map-responsive">
                         <div id="mapid"></div>
@@ -559,8 +581,19 @@
 
     <template id="t_scooter">
         <ons-page id="p_scooter">
+            <ons-toolbar>
+                <div class="left">
+                    <ons-toolbar-button icon="fa-bars" onclick="fn.open()"></ons-toolbar-button>
+                </div>
+                <div class="center titulo-barra">
+                    Alquiler
+                </div>
+                <div class="right">
+                    <img class="list-item__thumbnail" src="scooter.png">
+                </div>
+            </ons-toolbar>
             <section style="text-align: center">
-                <h1>ALQUILER</h1>
+                <!-- <h1>ALQUILER</h1> -->
                 <ons-card>
                     <h2>Datos del Monopatin</h2>
                     <table style="width:100%">
@@ -654,8 +687,19 @@
 
     <template id="t_historial">
         <ons-page id="p_historial">
+            <ons-toolbar>
+                <div class="left">
+                    <ons-toolbar-button icon="fa-bars" onclick="fn.open()"></ons-toolbar-button>
+                </div>
+                <div class="center titulo-barra">
+                    Historial
+                </div>
+                <div class="right">
+                    <img class="list-item__thumbnail" src="historico.png">
+                </div>
+            </ons-toolbar>
             <section id="s_historial" style="text-align: center">
-                <h1>Historial de alquileres</h1>
+                <!-- <h1>Historial de alquileres</h1> -->
             </section>
             <script>
                 var usuario     = sessionStorage.getItem("usuario_nombre");
@@ -670,7 +714,7 @@
                     if(noEstaLogeado()) cerrarSesion()
                     else{
                         $('#s_historial').empty()
-                        $('#s_historial').append("<h1>Historial de alquileres</h1>");
+                        // $('#s_historial').append("<h1>Historial de alquileres</h1>");
                         db.transaction(function(tx){
                             tx.executeSql("SELECT * FROM historico where id=?;", [id], function(tx, resultado){
 

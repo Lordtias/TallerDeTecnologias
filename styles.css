@@ -26,4 +26,11 @@ section{
 }
 table, th, td {
     border: 1px solid black;
-  }
+}
+.titulo-barra{
+    font-size: xx-large;
+    text-align: center;
+}
+.list-item__thumbnail {
+    margin-top: 10%;
+}
