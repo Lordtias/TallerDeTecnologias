@@ -585,7 +585,7 @@
                         $('#s_historial').empty()
                         $('#s_historial').append("<h1>Historial de alquileres</h1>");
                         db.transaction(function(tx){
-                            tx.executeSql("SELECT * FROM historico;", [], function(tx, resultado){
+                            tx.executeSql("SELECT * FROM historico where id=?;", [id], function(tx, resultado){
 
                                 if (resultado != null && resultado.rows != null) {
                                     for (var i = 0; i < resultado.rows.length; i++) {
