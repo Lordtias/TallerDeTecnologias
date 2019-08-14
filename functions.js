@@ -211,13 +211,22 @@ function cargarMonopatines(latitud, longitud, mymap){
 
          for (let index = 0; index < 5; index++) {
             const ele = Aelement[index];
-            if(Aelement[index].bateria >40) var marker = L.marker([ele.latitud, ele.longitud], {icon: scooterIcon}).addTo(markerGroup)
-            else  var marker = L.marker([ele.latitud, ele.longitud], {icon: scooterBatteryIcon}).addTo(markerGroup)
-            .on('click', function(e){
-               console.log(e);
-               //markerGroup.removeLayer(e.target._leaflet_id)
-               fn.load('t_scooter', {data:{"mono":Aelement[index]}});
-            })
+            if(Aelement[index].bateria >40){
+               var marker = L.marker([ele.latitud, ele.longitud], {icon: scooterIcon}).addTo(markerGroup)
+               .on('click', function(e){
+                  console.log(e);
+                  //markerGroup.removeLayer(e.target._leaflet_id)
+                  fn.load('t_scooter', {data:{"mono":Aelement[index]}});
+               })
+            }
+            else{
+               var marker = L.marker([ele.latitud, ele.longitud], {icon: scooterBatteryIcon}).addTo(markerGroup)
+               .on('click', function(e){
+                  console.log(e);
+                  //markerGroup.removeLayer(e.target._leaflet_id)
+                  fn.load('t_scooter', {data:{"mono":Aelement[index]}});
+               })
+            }  
             
             //console.log(marker);
          }
