@@ -102,7 +102,7 @@
                         </div>
                         Metodos de Pago
                     </ons-list-item>
-                    <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
+                    <ons-list-item onclick="fn.load('t_historial')" tappable>
                         <div class="left">
                             <img class="list-item__thumbnail" src="historico.png">
                         </div>
@@ -517,7 +517,7 @@
                     </table>
                 </ons-card>
                 <p style="text-align: center">
-                    <ons-button id="btn_salir" onclick="fn.load('t_alquiler')">Salir
+                    <ons-button id="btn_salir" onclick="fn.load('t_principal')">Salir
                     </ons-button>  
                 </p>
             </section>
@@ -554,6 +554,7 @@
                         $('#duracion_viaje').text(getDuracion())
                         $('#costo_viaje').html("$ <strong>"+getCosto(getDuracion())+"</strong>")
                         addToHistorico(id,usuario,f_ini,f_fin,getDuracion(),getCosto(getDuracion()))
+                        actualizarSaldo(getCosto(getDuracion()))
                     });
 
                 }

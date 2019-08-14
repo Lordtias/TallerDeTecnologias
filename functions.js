@@ -359,3 +359,18 @@ function validarSaldo(id){
    return ret;
 }
 
+function actualizarSaldo(saldo){
+   saldo = "-"+saldo;
+   $.ajax({
+      url: "http://oransh.develotion.com/tarjetas.php",
+      type: "PUT",
+      data: { id: id, saldo: saldo },
+      dataType: "json",
+      success: function (respuesta) {
+          ons.notification
+          .alert("El alquiler fue debitado de su tarjeta!",{title:"EXITO!"})
+      },
+      complete: function () {
+      }
+  });
+}
