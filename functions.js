@@ -176,6 +176,7 @@ function mensajes_usuarios(id){
     });
 }
 function cargarMonopatines(latitud, longitud, mymap){
+   $("#spn_cargando").text("Buscando monopatines mas cercanos ...");
    $("#modal_cargando").show();
    var Aharv =[];
    var Aelement = [];
@@ -378,4 +379,12 @@ function cerrarSesion(){
    menu.close();
    nav.resetToPage('t_login');
    // fn.load('t_login')
+}
+
+function noEsNumero(saldo){
+   if(!saldo) return true;
+   else{
+      if(isNaN(saldo)) return true;
+      else return false;
+   }   
 }

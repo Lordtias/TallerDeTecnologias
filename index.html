@@ -403,32 +403,37 @@
                         .then(function(input){
                             saldo = input;
 
-                            if(!(saldo%100)==0){
-                                ons.notification.alert('El saldo debe de ser multiplo de 100!',{title:"ERROR!"});
-                            }
-                            else{
-                                $("#spn_cargando").text("Agregando una tarjeta ...");
-                                $("#modal_cargando").show();
+                            if(noEsNumero(saldo)){
+                                ons.notification.alert('Ingrese un numero!',{title:"ERROR!"});
+                            }else
+                            {
+                                if(!(saldo%100)==0){
+                                    ons.notification.alert('El saldo debe de ser multiplo de 100!',{title:"ERROR!"});
+                                }
+                                else{
+                                    $("#spn_cargando").text("Acreditando el monto selecionado ...");
+                                    $("#modal_cargando").show();
 
-                                $.ajax({
-                                    url: "http://oransh.develotion.com/tarjetas.php",
-                                    type: "PUT",
-                                    data: { id: id, saldo: saldo },
-                                    dataType: "json",
-                                    success: function (respuesta) {
-                                        $("#nr_saldo_tarjeta").html("$ <strong>"+respuesta.saldo+"</strong>");
-                                        ons.notification
-                                        .alert("Se ah acreditado correctamente el saldo!",{title:"EXITO!"})
-                                    },
-                                    error:function(xml, err, status){
-                                        ons.notification
-                                        .alert(xml.responseJSON.mensaje,{title:"ERROR!"})
-                                    },
-                                    complete: function () {
-                                        $("#modal_cargando").hide();
-                                    }
-                                });
-                            }
+                                    $.ajax({
+                                        url: "http://oransh.develotion.com/tarjetas.php",
+                                        type: "PUT",
+                                        data: { id: id, saldo: saldo },
+                                        dataType: "json",
+                                        success: function (respuesta) {
+                                            $("#nr_saldo_tarjeta").html("$ <strong>"+respuesta.saldo+"</strong>");
+                                            ons.notification
+                                            .alert("Se ah acreditado correctamente el saldo!",{title:"EXITO!"})
+                                        },
+                                        error:function(xml, err, status){
+                                            ons.notification
+                                            .alert(xml.responseJSON.mensaje,{title:"ERROR!"})
+                                        },
+                                        complete: function () {
+                                            $("#modal_cargando").hide();
+                                        }
+                                    });
+                                }
+                            }    
                         })
 
                     });
