@@ -108,7 +108,7 @@
                         </div>
                         Historico de Viajes
                     </ons-list-item>
-                    <ons-list-item onclick="fn.load('t_login')" tappable>
+                    <ons-list-item onclick="cerrarSesion()" tappable>
                         <div class="left">
                             <img class="list-item__thumbnail" src="logoff.png">
                         </div>
@@ -237,6 +237,16 @@
                     $("#scooter").on("click", function () {
                         fn.load('t_alquiler', { data: { "usu": usuario, "id": id } });
                     });
+                };
+                ons.getScriptPage().onShow = function () {
+                    var usuario     = sessionStorage.getItem("usuario_nombre");
+                    //var usu       = JSON.parse(usuario);
+                    //var id        = usu.id;
+                    var id          = sessionStorage.getItem("usuario_id");
+                    console.log(usuario +" "+ id)
+                    if( ! id || ! usuario ){
+                        fn.load('t_login');
+                    }
                 };
 
             </script>

@@ -240,7 +240,7 @@ function cargarMonopatines(latitud, longitud, mymap){
          for (let index = 0; index < 5; index++) {
             const ele = Aelement[index];
             var marker = L.marker([ele.latitud, ele.longitud]).addTo(markerGroup)
-            //Esta funcion cambiarla a alquilar el monopatin.
+            
             .on('click', function(e){
                console.log(e);
                //markerGroup.removeLayer(e.target._leaflet_id)
@@ -287,15 +287,10 @@ function bubbleSort(Aharv, Aelement)
 { 
     var n = Aharv.length; 
   
-    // Traverse through all array elements 
     for(var i = 0; i < n; i++)  
     { 
-        // Last i elements are already in place 
         for (var j = 0; j < n - i - 1; j++)  
         { 
-            // traverse the array from 0 to n-i-1 
-            // Swap if the element found is greater 
-            // than the next element 
             if (Aharv[j] > Aharv[j+1]) 
             { 
                 var t = Aharv[j];
@@ -373,4 +368,9 @@ function actualizarSaldo(saldo){
       complete: function () {
       }
   });
+}
+
+function cerrarSesion(){
+   sessionStorage.clear()
+   fn.load('t_login')
 }
