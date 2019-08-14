@@ -620,6 +620,7 @@
                             //$("#modal_validando").show();
                             if(validarSaldo(id) == true){
                                 //$("#modal_validando").hide();
+                                document.getElementById("btn_alquilar").disabled = true;
                                 $("#modal_alquilando").show();
                                 f_ini = getTime('Inicio');
                                 $('#f_ini').html(f_ini)
@@ -630,6 +631,7 @@
                         });
 
                         $('#btn_terminar_viaje').on('click',function(){
+                            document.getElementById("btn_alquilar").disabled = false;
                             $("#modal_alquilando").hide();
                             document.getElementById("factura").style.display="";
                             f_fin = getTime('Fin')
