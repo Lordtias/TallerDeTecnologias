@@ -297,6 +297,8 @@ function getCosto(segundos){
 }
 
 function validarSaldo(id){
+   var button = document.getElementById("btn_alquilar");
+   button.innerHTML = "<ons-icon size='30px' spin icon='md-spinner'></ons-icon> Alquilar monopatin";
    var saldito;
    var ret = false;
    $.ajax({
@@ -312,6 +314,7 @@ function validarSaldo(id){
          }else{
             ret= true;
          }
+         button.innerHTML = "Alquilar monopatin";
       }
    });
    return ret;
