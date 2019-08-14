@@ -271,9 +271,16 @@ function getTime(stage){
    if(stage == 'Fin'){
       sessionStorage.setItem("f_Fin",fecha.getTime());
    }
-   return   "<strong>Fecha: </strong>"+fecha.getDate()+"/"+fecha.getMonth()+"/"+fecha.getFullYear()+
-            " - <strong>Hora: </strong>"+fecha.getHours()+":"+fecha.getMinutes()+":"+fecha.getSeconds()
+   return   "<strong>Fecha: </strong>"+fecha.getDate()+"/"+(fecha.getMonth()+1)+"/"+fecha.getFullYear()+
+            " - <strong>Hora: </strong>"+addZero(fecha.getHours())+":"+addZero(fecha.getMinutes())+":"+addZero(fecha.getSeconds())
 }
+
+function addZero(i) {
+   if (i < 10) {
+     i = "0" + i;
+   }
+   return i;
+ }
 
 function getDuracion(){
    var f_Ini = sessionStorage.getItem("f_Ini");
