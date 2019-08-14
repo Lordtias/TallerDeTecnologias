@@ -59,6 +59,11 @@ window.fn.open = function() {
   menu.open();
 };
 
+window.fn.open = function() {
+   var menu = document.getElementById('menu');
+   menu.open();
+ };
+
 window.fn.load = function(page, params) {
   var menu = document.getElementById('menu');
   var p = page.replace("t_","p_");
@@ -349,6 +354,8 @@ function noEstaLogeado(){
 function cerrarSesion(){
    sessionStorage.clear()
    var nav = document.getElementById('nav');
+   var menu = document.getElementById('menu');
+   menu.close();
    nav.resetToPage('t_login');
    // fn.load('t_login')
 }
