@@ -266,7 +266,10 @@ function toRadians(x){
 }
 
 function haversine(latitud, longitud,element){
-   var R = 6371e3; // metres
+  console.log(latitud);
+  console.log(longitud);
+   
+  var R = 6371e3; // metres
    var lat1 = toRadians(latitud);
    var lat2 = toRadians(element.latitud);
    var delta1 = toRadians((element.latitud-latitud));
