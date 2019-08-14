@@ -34,10 +34,9 @@ else if(db.version == "1.0"){
     });
 }
 
-function addFavorito(id,nombre,apellido){
+function addToHistorico(id,nombre,f_ini,f_fin,duracion,costo){
     db.transaction(function(tx){
-        console.log("Hago el insert!")
-        tx.executeSql("INSERT or IGNORE INTO usuarios values('"+id+"','"+nombre+"','"+apellido+"');")
+        tx.executeSql("INSERT or IGNORE INTO historico values("+id+",'"+nombre+"','"+f_ini+"','"+f_fin+"',"+duracion+","+costo+");")
     },
     function(e){
         console.log(e.message)

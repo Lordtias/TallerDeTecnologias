@@ -244,6 +244,11 @@
 <!---------------------------------------------------------------------------------------------------->
     <template id="t_billetera">
         <ons-page id="p_billetera">
+            <ons-toolbar>
+                <div class="left">
+                    <ons-toolbar-button icon="fa-bars" onclick="fn.open()"></ons-toolbar-button>
+                </div>
+            </ons-toolbar>
             <section>
                 <h1 style="text-align: center">Billetera</h1>
                 <ons-card>
@@ -513,21 +518,22 @@
                 //var usu       = JSON.parse(usuario);
                 //var id        = usu.id;
                 var id          = sessionStorage.getItem("usuario_id");
+                var f_fin       = null;
+                var f_ini       = null;
 
                 ons.getScriptPage().onInit = function () {
                     $('#bateria_mono').text(this.data.mono.bateria);
                     $('#codigo_mono').text(this.data.mono.codigo);
 
                     $('#btn_alquilar').on('click',function(){
-                       // $("#modal_validando").show();
+                        //$("#modal_validando").show();
                         if(validarSaldo(id) == true){
-                      //      $("#modal_validando").hide();
-                        
+                            //$("#modal_validando").hide();
                             $("#modal_alquilando").show();
-                        $('#f_ini').html(getTime('Inicio'))
-                    }else{
-                       // $("#modal_validando").hide();
-                        
+                            f_ini = getTime('Inicio');
+                            $('#f_ini').html(f_ini)
+                        }else{
+                        //$("#modal_validando").hide();
                         ons.notification.alert('Saldo insuficiente. Debe realizar una recarga para continuar',{title:"Saldo Insuficiente!"});
                     }
                     });
@@ -535,9 +541,11 @@
                     $('#btn_terminar_viaje').on('click',function(){
                         $("#modal_alquilando").hide();
                         document.getElementById("factura").style.display="";
-                        $('#f_fin').html(getTime('Fin'))
+                        f_fin = getTime('Fin')
+                        $('#f_fin').html(f_fin)
                         $('#duracion_viaje').text(getDuracion())
                         $('#costo_viaje').html("$ <strong>"+getCosto(getDuracion())+"</strong>")
+                        addToHistorico(id,usuario,f_ini,f_fin,getDuracion(),getCosto(getDuracion()))
                     });
 
                 }
@@ -565,6 +573,8 @@
     
                     }
                     ons.getScriptPage().onShow = function () {
+                        $('#s_historial').empty()
+                        $('#s_historial').append("<h1>Historial de alquileres</h1>");
                         db.transaction(function(tx){
                             tx.executeSql("SELECT * FROM historico;", [], function(tx, resultado){
 

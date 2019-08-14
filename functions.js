@@ -335,33 +335,24 @@ function getCosto(segundos){
    return (segundos * costo_segundo) + costo_inicio; 
 }
 
-
-
 function validarSaldo(id){
-var saldito;
-var ret = false;
-console.log(id);
-  $.ajax({
-    url: "http://oransh.develotion.com/tarjetas.php",
-    type: "GET",
-    dataType: "json",
-    async: false,
-    data: { id: id },
-    success: function (respuesta) {
-        saldito = respuesta.saldo;
-        if(respuesta.saldo < 49)  {
-          console.log("Entre al if porque no da el dinero");
-          ret= false;
-        }else{
-          console.log("Entre al Else porque da el dinero");
-          ret= true;
-        }
+   var saldito;
+   var ret = false;
+   $.ajax({
+      url: "http://oransh.develotion.com/tarjetas.php",
+      type: "GET",
+      dataType: "json",
+      async: false,
+      data: { id: id },
+      success: function (respuesta) {
+         saldito = respuesta.saldo;
+         if(respuesta.saldo < 49)  {
+            ret= false;
+         }else{
+            ret= true;
+         }
       }
-    
-});
-console.log(ret);
-console.log(saldito);
-return ret;
-
+   });
+   return ret;
 }
 
