@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <widget xmlns   = "http://www.w3.org/ns/widgets"
         xmlns:gap   = "http://phonegap.com/ns/1.0"
-        id          = "com.marcelocaiafa.app"
+        id          = "com.Quelotines.app"
         version     = "1.0.0" >
-    <name>Mantenimiento de Usuarios</name>
+    <name>Quelotines Inc.</name>
     <description>
-        Sistema para listar y grabar usuarios favoritos!
-    </description>
+        Sistema  de Monopatinaje extrema </description>
 
-    <author href="http://marcelocaiafa.com/" email="contact@marcelocaiafa.com">
-      Marcelo Caiafa
+    <author href="http://quelotines.com/" email="contact@quelotines.com">
+      Quelo Tine
     </author>
     
     <!-- plugins -->
