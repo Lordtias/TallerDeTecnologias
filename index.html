@@ -144,33 +144,42 @@
                 </p>
             </section>
             <script>
-                    ons.getScriptPage().onInit = function () {
-                        $("#btn_registrar_usu").on("click", function(){
+                ons.getScriptPage().onInit = function () {
+                    $("#btn_registrar_usu").on("click", function(){
+
+                        $("#spn_cargando").text("Registrando usuario ...");
+                        $("#modal_cargando").show();
+
                         var usuario = $("#inp_usuario").val();
                         var password = $("#inp_pwd").val();
                         datos = {
-                        usuario:usuario,
-                        password:password
+                            usuario:usuario,
+                            password:password
                         };
                         $.ajax({
-                        url:"http://oransh.develotion.com/usuarios.php",
-                        data:datos,
-                        type:"POST",
-                        dataType:"json",
-                        success:function(respuesta){
-                            $.ajaxSetup({
-                                headers:{
-                                    token:respuesta.token
-                                }
-                            })
-                            //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
-                            sessionStorage.setItem("usuario",usuario);
-                            sessionStorage.setItem("usuario_id",respuesta.id);
-                            console.log("TOOOKENNN: " + token.toString())
-                            fn.load('t_principal');
-                        },
-                        error:function(xml, err, status){
-                            ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
+                            url:"http://oransh.develotion.com/usuarios.php",
+                            data:datos,
+                            type:"POST",
+                            dataType:"json",
+                            success:function(respuesta){
+                                $.ajaxSetup({
+                                    headers:{
+                                        token:respuesta.token
+                                    }
+                                })
+                                //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
+
+                                sessionStorage.setItem("usuario_nombre",usuario);
+                                sessionStorage.setItem("usuario_id",respuesta.id);
+
+                                fn.load('t_principal');
+                            },
+                            error:function(xml, err, status){
+                                ons.notification
+                                .alert(xml.responseJSON.mensaje,{title:"ERROR!"})
+                            },
+                            complete: function () {
+                                $("#modal_cargando").hide();
                             }
                         });
                     });
@@ -219,15 +228,15 @@
                         $("#modal_cargando").show();
 
                         $.ajax({
-                        url:"http://oransh.develotion.com/login.php",
-                        data:datos,
-                        type:"POST",
-                        dataType:"json",
-                        success:function(respuesta){
+                            url:"http://oransh.develotion.com/login.php",
+                            data:datos,
+                            type:"POST",
+                            dataType:"json",
+                            success:function(respuesta){
                                 $.ajaxSetup({
-                                headers:{
-                                    token:respuesta.token
-                                }
+                                    headers:{
+                                        token:respuesta.token
+                                    }
                                 });
                                 console.log(respuesta);
                                 //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
@@ -235,13 +244,14 @@
                                 sessionStorage.setItem("usuario_nombre",usuario);
                                 sessionStorage.setItem("usuario_id",respuesta.id);
                                 fn.load('t_principal');
-                        },
-                        error:function(xml, err, status){
-                                ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
                             },
-                        complete: function () {
+                            error:function(xml, err, status){
+                                ons.notification
+                                .alert(xml.responseJSON.mensaje,{title:"ERROR!"})
+                            },
+                            complete: function () {
                                 $("#modal_cargando").hide();
-                        }
+                            }
                         });
                     });
                 }
@@ -362,6 +372,10 @@
                                     $("#nr_saldo_tarjeta").html("$ <strong>"+respuesta.saldo+"</strong>");
                                 }
                             },
+                            error:function(xml, err, status){
+                                ons.notification
+                                .alert(xml.responseJSON.mensaje,{title:"ERROR!"})
+                            },
                             complete: function () {
                                 $("#modal_cargando").hide();
                             }
@@ -394,6 +408,10 @@
                                         $("#nr_saldo_tarjeta").html("$ <strong>"+respuesta.saldo+"</strong>");
                                         ons.notification
                                         .alert("Se ah acreditado correctamente el saldo!",{title:"EXITO!"})
+                                    },
+                                    error:function(xml, err, status){
+                                        ons.notification
+                                        .alert(xml.responseJSON.mensaje,{title:"ERROR!"})
                                     },
                                     complete: function () {
                                         $("#modal_cargando").hide();
@@ -431,6 +449,10 @@
                                         ons.notification
                                         .alert("Se ah agregado correctamente la tarjeta!",{title:"EXITO!"})
                                     },
+                                    error:function(xml, err, status){
+                                        ons.notification
+                                        .alert(xml.responseJSON.mensaje,{title:"ERROR!"})
+                                    },
                                     complete: function () {
                                         $("#modal_cargando").hide();
                                     }
@@ -463,6 +485,10 @@
                                                 $("#nr_saldo_tarjeta").html("$ -");
                                                 ons.notification
                                                 .alert("Se ah eliminado correctamente la tarjeta!",{title:"EXITO!"})
+                                            },
+                                            error:function(xml, err, status){
+                                                ons.notification
+                                                .alert(xml.responseJSON.mensaje,{title:"ERROR!"})
                                             },
                                             complete: function () {
                                                 $("#modal_cargando").hide();
