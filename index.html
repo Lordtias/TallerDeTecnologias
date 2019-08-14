@@ -88,7 +88,7 @@
                         </div>
                         Metodos de Pago
                     </ons-list-item>
-                    <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
+                    <ons-list-item onclick="fn.load('t_historial')" tappable>
                         <div class="left">
                             <img class="list-item__thumbnail" src="historico.png">
                         </div>
@@ -529,30 +529,53 @@
         </ons-page>
     </template>
 
+    <template id="t_historial">
+            <ons-page id="p_historial">
+                <section id="s_historial" style="text-align: center">
+                    <h1>Historial de alquileres</h1>
+                </section>
+                <script>
+                    var usuario     = sessionStorage.getItem("usuario_nombre");
+                    //var usu       = JSON.parse(usuario);
+                    //var id        = usu.id;
+                    var id          = sessionStorage.getItem("usuario_id");
+    
+                    ons.getScriptPage().onInit = function () {
+    
+                    }
+                    ons.getScriptPage().onShow = function () {
+                        db.transaction(function(tx){
+                            tx.executeSql("SELECT * FROM historico;", [], function(tx, resultado){
+
+                                if (resultado != null && resultado.rows != null) {
+                                    for (var i = 0; i < resultado.rows.length; i++) {
+                                        var row = resultado.rows.item(i);
+                                        var card =  "<ons-card>"+
+                                                    "   <h2>Inicio del Viaje</h2>"+
+                                                    "   <p style='text-align: center'>"+row.f_ini+"</p>"+
+                                                    "   <h2>Final del Viaje</h2>"+
+                                                    "   <p style='text-align: center'>"+row.f_fin+"</p>"+
+                                                    "   <h3>Costo</h3>"+
+                                                    "   <table style='width:100%'>"+
+                                                    "       <tr>"+
+                                                    "           <th style='text-align: center'>Duracion</th>"+
+                                                    "           <th style='text-align: center'>Costo total</th>"+
+                                                    "       </tr>"+
+                                                    "       <tr>"+
+                                                    "           <td style='text-align: center'><p>"+row.duracion+"</p></td>"+
+                                                    "           <td style='text-align: center'><p>"+row.costo+"</p></td>"+
+                                                    "       </tr>"+
+                                                    "   </table>"+
+                                                    "</ons-card>"
+                                        $('#s_historial').append(card)
+                                    }
+                                }
+                            })
+                        });
+                    }
+                </script>
+            </ons-page>
+        </template>
+
 </body>
-
-
-
-<template id="dialog.html">
-
-    <ons-dialog id="my-dialog" cancelable>
-        <div style="text-align: left; padding: 10px;">
-            <p>
-                <ons-select select-id="mensajeUsuario">
-                    <option value="-1">
-                        Seleccione un usuario
-                    </option>
-                </ons-select>
-            </p>
-
-            <p><input type="text" name="" id="mensajeHtml" placeholder="Ingrese un mensaje"
-                    class="text-input text-input--material"></p>
-            <p>
-                <ons-button style="width:98%" onclick="enviarMensaje()">Enviar</ons-button>
-            </p>
-        </div>
-    </ons-dialog>
-
-</template>
-
 </html>
