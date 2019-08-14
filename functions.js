@@ -74,75 +74,31 @@ window.fn.load = function(page, params) {
 }
 
 ons.ready(function(){
+   // $("#tarjeta").on("click", function(){
+   //    var usu = sessionStorage.getItem("usuario");
+   //    var id = sessionStorage.getItem("usuario_id");
 
-   $("#btn_registrar").on("click", function(){
-      var myNavigator = document.getElementById('nav');
-      fn.load('t_registro');
-   });
+   //    datos = {
+   //     usuario:id,
+   //    };
+   //    console.log("holaaaa");
+   //    fn.load('t_billetera', {data:{"usu":usuario, "id":respuesta.id}});
 
-   $("#btn_login").on("click", function(){
-      var usuario = $("#inp_login_usuario").val();
-      var password = $("#inp_login_pwd").val();
-      
-      datos = {
-         usuario:usuario,
-         password:password
-      };
-
-      $("#spn_cargando").text("Autentificando usuario ...");
-      $("#modal_cargando").show();
-
-      $.ajax({
-      url:"http://oransh.develotion.com/login.php",
-      data:datos,
-      type:"POST",
-      dataType:"json",
-      success:function(respuesta){
-            $.ajaxSetup({
-               headers:{
-                  token:respuesta.token
-               }
-            });
-            console.log(respuesta);
-            //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
-            sessionStorage.setItem("usuario_nombre",usuario);
-            sessionStorage.setItem("usuario_id",respuesta.id);
-            fn.load('t_principal');
-      },
-      error:function(xml, err, status){
-            ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
-         },
-      complete: function () {
-            $("#modal_cargando").hide();
-      }
-      });
-   });
-
-   $("#tarjeta").on("click", function(){
-      var usu = sessionStorage.getItem("usuario");
-      var id = sessionStorage.getItem("usuario_id");
-
-      datos = {
-       usuario:id,
-      };
-      console.log("holaaaa");
-      fn.load('t_billetera', {data:{"usu":usuario, "id":respuesta.id}});
-
-      $.ajax({
-      url:"http://oransh.develotion.com/login.php",
-      data:datos,
-      type:"POST",
-      dataType:"json",
-      success:function(respuesta){
-           console.log(respuesta);
-           //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
-           fn.load('t_billetera', {data:{"usu":usuario, "id":respuesta.id}});
-      },
-      error:function(xml, err, status){
-           ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
-        }
-      });
-   });
+   //    $.ajax({
+   //    url:"http://oransh.develotion.com/login.php",
+   //    data:datos,
+   //    type:"POST",
+   //    dataType:"json",
+   //    success:function(respuesta){
+   //         console.log(respuesta);
+   //         //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
+   //         fn.load('t_billetera', {data:{"usu":usuario, "id":respuesta.id}});
+   //    },
+   //    error:function(xml, err, status){
+   //         ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
+   //      }
+   //    });
+   // });
 });
 
 
@@ -370,7 +326,19 @@ function actualizarSaldo(saldo){
   });
 }
 
+function noEstaLogeado(){
+   var usuario     = sessionStorage.getItem("usuario_nombre");
+   //var usu       = JSON.parse(usuario);
+   //var id        = usu.id;
+   var id          = sessionStorage.getItem("usuario_id");
+   console.log(usuario +" "+ id)
+   if( ! id || ! usuario ) return true;
+   else return false;
+}
+
 function cerrarSesion(){
    sessionStorage.clear()
-   fn.load('t_login')
+   var nav = document.getElementById('nav');
+   nav.resetToPage('t_login');
+   // fn.load('t_login')
 }

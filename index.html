@@ -199,12 +199,80 @@
                     <ons-button modifier="outline" id="btn_registrar">Registrarse</ons-button>
                 </p>
             </section>
-        </ons-page>
+            <script>
+                ons.getScriptPage().onShow = function () {
+                    $("#btn_registrar").on("click", function(){
+                        var myNavigator = document.getElementById('nav');
+                        fn.load('t_registro');
+                    });
 
-<!---------------------------------------------------------------------------------------------------->
+                    $("#btn_login").on("click", function(){
+                        var usuario = $("#inp_login_usuario").val();
+                        var password = $("#inp_login_pwd").val();
+                        
+                        datos = {
+                            usuario:usuario,
+                            password:password
+                        };
+
+                        $("#spn_cargando").text("Autentificando usuario ...");
+                        $("#modal_cargando").show();
+
+                        $.ajax({
+                        url:"http://oransh.develotion.com/login.php",
+                        data:datos,
+                        type:"POST",
+                        dataType:"json",
+                        success:function(respuesta){
+                                $.ajaxSetup({
+                                headers:{
+                                    token:respuesta.token
+                                }
+                                });
+                                console.log(respuesta);
+                                //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
+                                sessionStorage.clear()
+                                sessionStorage.setItem("usuario_nombre",usuario);
+                                sessionStorage.setItem("usuario_id",respuesta.id);
+                                fn.load('t_principal');
+                        },
+                        error:function(xml, err, status){
+                                ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
+                            },
+                        complete: function () {
+                                $("#modal_cargando").hide();
+                        }
+                        });
+                    });
+                }
+            </script>
+        </ons-page>
     </template>
+    
+<!---------------------------------------------------------------------------------------------------->
     <template id="t_principal">
         <ons-page id="p_principal">
+            <script>
+                    ons.getScriptPage().onInit = function () {
+                        var usuario     = sessionStorage.getItem("usuario_nombre");
+                        //var usu       = JSON.parse(usuario);
+                        //var id        = usu.id;
+                        var id          = sessionStorage.getItem("usuario_id");
+                        
+                        $("#saludo").html("Hola <strong>" + usuario + "</strong>!");
+    
+                        $("#tarjeta").on("click", function () {
+                            fn.load('t_billetera', { data: { "usu": usuario, "id": id } });
+                        });
+    
+                        $("#scooter").on("click", function () {
+                            fn.load('t_alquiler', { data: { "usu": usuario, "id": id } });
+                        });
+                    };
+                    ons.getScriptPage().onShow = function () {
+                        if(noEstaLogeado()) cerrarSesion()
+                    };
+                </script>
             <ons-toolbar>
                 <div class="left">
                     <ons-toolbar-button icon="fa-bars" onclick="fn.open()"></ons-toolbar-button>
@@ -221,35 +289,6 @@
                 </p>
                 <ons-list id="l_principal"></ons-list>
             </section>
-            <script>
-                ons.getScriptPage().onInit = function () {
-                    var usuario     = sessionStorage.getItem("usuario_nombre");
-                    //var usu       = JSON.parse(usuario);
-                    //var id        = usu.id;
-                    var id          = sessionStorage.getItem("usuario_id");
-                    
-                    $("#saludo").html("Hola <strong>" + usuario + "</strong>!");
-
-                    $("#tarjeta").on("click", function () {
-                        fn.load('t_billetera', { data: { "usu": usuario, "id": id } });
-                    });
-
-                    $("#scooter").on("click", function () {
-                        fn.load('t_alquiler', { data: { "usu": usuario, "id": id } });
-                    });
-                };
-                ons.getScriptPage().onShow = function () {
-                    var usuario     = sessionStorage.getItem("usuario_nombre");
-                    //var usu       = JSON.parse(usuario);
-                    //var id        = usu.id;
-                    var id          = sessionStorage.getItem("usuario_id");
-                    console.log(usuario +" "+ id)
-                    if( ! id || ! usuario ){
-                        fn.load('t_login');
-                    }
-                };
-
-            </script>
         </ons-page>
     </template>
 
@@ -305,26 +344,29 @@
                 var id          = sessionStorage.getItem("usuario_id");
 
                 ons.getScriptPage().onShow = function () {
-                    $("#spn_cargando").text("Actualizando saldo ...");
-                    $("#modal_cargando").show();
+                    if(noEstaLogeado()) cerrarSesion()
+                    else{
+                        $("#spn_cargando").text("Actualizando saldo ...");
+                        $("#modal_cargando").show();
 
-                    $.ajax({
-                        url: "http://oransh.develotion.com/tarjetas.php",
-                        type: "GET",
-                        dataType: "json",
-                        data: { id: id },
-                        success: function (respuesta) {
-                            var tarjeta = validarTarjetaDeCredito(respuesta.numero);
-                            if(tarjeta){
-                                document.getElementById("imagen_tarjeta").src=tarjeta.img;
-                                $("#nr_tarjeta").text(respuesta.numero);
-                                $("#nr_saldo_tarjeta").html("$ <strong>"+respuesta.saldo+"</strong>");
+                        $.ajax({
+                            url: "http://oransh.develotion.com/tarjetas.php",
+                            type: "GET",
+                            dataType: "json",
+                            data: { id: id },
+                            success: function (respuesta) {
+                                var tarjeta = validarTarjetaDeCredito(respuesta.numero);
+                                if(tarjeta){
+                                    document.getElementById("imagen_tarjeta").src=tarjeta.img;
+                                    $("#nr_tarjeta").text(respuesta.numero);
+                                    $("#nr_saldo_tarjeta").html("$ <strong>"+respuesta.saldo+"</strong>");
+                                }
+                            },
+                            complete: function () {
+                                $("#modal_cargando").hide();
                             }
-                        },
-                        complete: function () {
-                            $("#modal_cargando").hide();
-                        }
-                    });
+                        });
+                    }    
                 };
 
                 ons.getScriptPage().onInit = function () {
@@ -456,30 +498,33 @@
                 }
 
                 ons.getScriptPage().onShow = function () {
-                    var device;              
-                    var lat;
-                    var lng;
-                    try{   
-                        //document.getElementById('mapid').innerHTML = "<div id='mapid' ></div>";
-                        navigator.geolocation.getCurrentPosition(function(pos){
-                                L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-                                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-                                maxZoom: 18,
-                                id: 'mapbox.streets',
-                                accessToken: 'pk.eyJ1IjoibG9yZHRpYXMiLCJhIjoiY2p5aHk4dzgxMDRxdjNuanhkZHlydXhqbSJ9.4lLFkbGTNbtNUbXca3FP-w'
-                            }).addTo(mymap);
+                    if(noEstaLogeado()) cerrarSesion()
+                    else{
+                        var device;              
+                        var lat;
+                        var lng;
+                        try{   
+                            //document.getElementById('mapid').innerHTML = "<div id='mapid' ></div>";
+                            navigator.geolocation.getCurrentPosition(function(pos){
+                                    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+                                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                                    maxZoom: 18,
+                                    id: 'mapbox.streets',
+                                    accessToken: 'pk.eyJ1IjoibG9yZHRpYXMiLCJhIjoiY2p5aHk4dzgxMDRxdjNuanhkZHlydXhqbSJ9.4lLFkbGTNbtNUbXca3FP-w'
+                                }).addTo(mymap);
 
-                            lat = pos.coords.latitude;
-                            lng = pos.coords.longitude;
-                            device = [Number(lat), Number(lng)];
-                            var marker = L.marker(device).addTo(mymap);
-                        
-                            cargarMonopatines(Number(lat), Number(lng),mymap);
-  
-                        });
-                   }
-                    catch(e){
-                        console.log("Hola: "+e.message);
+                                lat = pos.coords.latitude;
+                                lng = pos.coords.longitude;
+                                device = [Number(lat), Number(lng)];
+                                var marker = L.marker(device).addTo(mymap);
+                            
+                                cargarMonopatines(Number(lat), Number(lng),mymap);
+    
+                            });
+                        }
+                        catch(e){
+                            console.log("Hola: "+e.message);
+                        }
                     }
                 };
             </script>
@@ -540,33 +585,35 @@
                 var f_ini       = null;
 
                 ons.getScriptPage().onInit = function () {
-                    $('#bateria_mono').text(this.data.mono.bateria);
-                    $('#codigo_mono').text(this.data.mono.codigo);
+                    if(noEstaLogeado()) cerrarSesion()
+                    else{
+                        $('#bateria_mono').text(this.data.mono.bateria);
+                        $('#codigo_mono').text(this.data.mono.codigo);
 
-                    $('#btn_alquilar').on('click',function(){
-                        //$("#modal_validando").show();
-                        if(validarSaldo(id) == true){
+                        $('#btn_alquilar').on('click',function(){
+                            //$("#modal_validando").show();
+                            if(validarSaldo(id) == true){
+                                //$("#modal_validando").hide();
+                                $("#modal_alquilando").show();
+                                f_ini = getTime('Inicio');
+                                $('#f_ini').html(f_ini)
+                            }else{
                             //$("#modal_validando").hide();
-                            $("#modal_alquilando").show();
-                            f_ini = getTime('Inicio');
-                            $('#f_ini').html(f_ini)
-                        }else{
-                        //$("#modal_validando").hide();
-                        ons.notification.alert('Saldo insuficiente. Debe realizar una recarga para continuar',{title:"Saldo Insuficiente!"});
+                            ons.notification.alert('Saldo insuficiente. Debe realizar una recarga para continuar',{title:"Saldo Insuficiente!"});
+                        }
+                        });
+
+                        $('#btn_terminar_viaje').on('click',function(){
+                            $("#modal_alquilando").hide();
+                            document.getElementById("factura").style.display="";
+                            f_fin = getTime('Fin')
+                            $('#f_fin').html(f_fin)
+                            $('#duracion_viaje').text(getDuracion())
+                            $('#costo_viaje').html("$ <strong>"+getCosto(getDuracion())+"</strong>")
+                            addToHistorico(id,usuario,f_ini,f_fin,getDuracion(),getCosto(getDuracion()))
+                            actualizarSaldo(getCosto(getDuracion()))
+                        });
                     }
-                    });
-
-                    $('#btn_terminar_viaje').on('click',function(){
-                        $("#modal_alquilando").hide();
-                        document.getElementById("factura").style.display="";
-                        f_fin = getTime('Fin')
-                        $('#f_fin').html(f_fin)
-                        $('#duracion_viaje').text(getDuracion())
-                        $('#costo_viaje').html("$ <strong>"+getCosto(getDuracion())+"</strong>")
-                        addToHistorico(id,usuario,f_ini,f_fin,getDuracion(),getCosto(getDuracion()))
-                        actualizarSaldo(getCosto(getDuracion()))
-                    });
-
                 }
                 ons.getScriptPage().onShow = function () {
                     document.getElementById("factura").style.display="none";
@@ -578,20 +625,22 @@
     </template>
 
     <template id="t_historial">
-            <ons-page id="p_historial">
-                <section id="s_historial" style="text-align: center">
-                    <h1>Historial de alquileres</h1>
-                </section>
-                <script>
-                    var usuario     = sessionStorage.getItem("usuario_nombre");
-                    //var usu       = JSON.parse(usuario);
-                    //var id        = usu.id;
-                    var id          = sessionStorage.getItem("usuario_id");
-    
-                    ons.getScriptPage().onInit = function () {
-    
-                    }
-                    ons.getScriptPage().onShow = function () {
+        <ons-page id="p_historial">
+            <section id="s_historial" style="text-align: center">
+                <h1>Historial de alquileres</h1>
+            </section>
+            <script>
+                var usuario     = sessionStorage.getItem("usuario_nombre");
+                //var usu       = JSON.parse(usuario);
+                //var id        = usu.id;
+                var id          = sessionStorage.getItem("usuario_id");
+
+                ons.getScriptPage().onInit = function () {
+
+                }
+                ons.getScriptPage().onShow = function () {
+                    if(noEstaLogeado()) cerrarSesion()
+                    else{
                         $('#s_historial').empty()
                         $('#s_historial').append("<h1>Historial de alquileres</h1>");
                         db.transaction(function(tx){
@@ -622,9 +671,10 @@
                                 }
                             })
                         });
-                    }
-                </script>
-            </ons-page>
-        </template>
+                    }    
+                }
+            </script>
+        </ons-page>
+    </template>
 </body>
 </html>
