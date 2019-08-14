@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>Quelotines</title>
+
+    <!--JQUERY-->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+    <!--Onsenui-->
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css" />
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css" />
+    <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+
+    <!--Leaflet Maps-->
+    <link   rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+            integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+            crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+            integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+            crossorigin="">
+   </script>
+
+    <!--Hoja de estilo Local-->
+    <link rel="stylesheet" href="styles.css" />
+
+    <!--JS local-->
+    <script src="functions.js"></script>
+
+    <!--Base SQLITE local-->
+    <script src="db.js"></script>
+    
+    <!--Validador de tarjetas local-->
+    <script src="validadorTarjetas.js"></script>
+    
+
+</head>
+
+<body>
+
+    <ons-modal direction="up" id="modal_cargando">
+        <div style="text-align: center">
+            <p>
+                <ons-icon icon="md-spinner" size="28px" spin></ons-icon>
+                <span id="spn_cargando"></span>
+
+            </p>
+        </div>
+    </ons-modal>
+
+    <ons-modal direction="up" id="modal_alquilando">
+            <div style="text-align: center">
+                <p>
+                    <ons-icon icon="md-spinner" size="38px" spin></ons-icon>
+                    <span id="spn_cargando"> En viaje ...</span>
+                    <ons-button modifier="outline" id="btn_terminar_viaje" data-id="">Terminar Viaje
+                        </ons-button>
+                </p>
+            </div>
+        </ons-modal>
+
+
+    <ons-modal direction="up" id="modal_validando">
+        <div style="text-align: center">
+            <p>
+                <ons-icon icon="md-spinner" size="38px" spin></ons-icon>
+                <span id="spn_cargando"> Validando saldo ...</span>
+              
+                    </ons-button>
+            </p>
+        </div>
+    </ons-modal>
+
+    <ons-splitter>
+
+        <ons-splitter-side id="menu" side="left" width="220px" collapse swipeable>
+            <ons-page>
+                <ons-list>
+                    <img style="width: 100%; height: auto; border-radius: 5%; box-shadow: 5px 5px 5px 5px gray;" src="logo.png" />
+                    <ons-list-item onclick="fn.load('t_principal')" tappable >
+                        <div class="left">
+                            <img class="list-item__thumbnail" src="home.png">
+                        </div>
+                        Home
+                    </ons-list-item>
+                    <ons-list-item onclick="fn.load('t_alquiler')" tappable>
+                        <div class="left">
+                            <img class="list-item__thumbnail" src="scooter.png">
+                        </div>
+                        Alquiler de monopatin
+                    </ons-list-item>
+                    <ons-list-item onclick="fn.load('t_billetera')" tappable>
+                        <div class="left">
+                            <img class="list-item__thumbnail" src="tarjeta.png">
+                        </div>
+                        Metodos de Pago
+                    </ons-list-item>
+                    <ons-list-item onclick="fn.load('t_listado_usuarios')" tappable>
+                        <div class="left">
+                            <img class="list-item__thumbnail" src="historico.png">
+                        </div>
+                        Historico de Viajes
+                    </ons-list-item>
+                    <ons-list-item onclick="fn.load('t_login')" tappable>
+                        <div class="left">
+                            <img class="list-item__thumbnail" src="logoff.png">
+                        </div>
+                        Cerrar Sesion
+                    </ons-list-item>
+                </ons-list>
+            </ons-page>
+        </ons-splitter-side>
+
+        <ons-splitter-content id="content">
+            <ons-navigator animation="fade" page="t_login" id="nav"></ons-navigator>
+        </ons-splitter-content>
+
+    </ons-splitter>
+
+    <!---------------------------------------------------------------------------------------------------->
+    <template id="t_registro">
+        <ons-page id="p_registro">
+            <section style="text-align: center; margin-top: 40%;">
+                <h1>Registro de Usuario</h1>
+                <label for="inp_usuario">Usuario</label>
+                <p>
+                    <input class="text-input text-input--material" type="text" id="inp_usuario"
+                        placeholder="Ingrese usuario" />
+                </p>
+                <label for="inp_pwd">Password</label>
+                <p>
+                    <input class="text-input text-input--material" type="password" id="inp_pwd"
+                        placeholder="Ingrese contrase&ntilde;a" />
+                </p>
+                <p>
+                    <ons-button id="btn_registrar_usu">Registrarse</ons-button>
+                </p>
+            </section>
+            <script>
+                    ons.getScriptPage().onInit = function () {
+                        $("#btn_registrar_usu").on("click", function(){
+                        var usuario = $("#inp_usuario").val();
+                        var password = $("#inp_pwd").val();
+                        datos = {
+                        usuario:usuario,
+                        password:password
+                        };
+                        $.ajax({
+                        url:"http://oransh.develotion.com/usuarios.php",
+                        data:datos,
+                        type:"POST",
+                        dataType:"json",
+                        success:function(respuesta){
+                            $.ajaxSetup({
+                                headers:{
+                                    token:respuesta.token
+                                }
+                            })
+                            //sessionStorage.setItem("usuario", JSON.stringify(respuesta.descripcion));
+                            sessionStorage.setItem("usuario",usuario);
+                            sessionStorage.setItem("usuario_id",respuesta.id);
+                            console.log("TOOOKENNN: " + token.toString())
+                            fn.load('t_principal');
+                        },
+                        error:function(xml, err, status){
+                            ons.notification.toast(xml.responseJSON.descripcion, {"timeout":3000}); 
+                            }
+                        });
+                    });
+                };
+            </script>
+        </ons-page>
+    </template>
+
+    <!---------------------------------------------------------------------------------------------------->
+    <template id="t_login">
+        <ons-page id="p_login">
+            <section style="text-align: center; margin-top: 40%;">
+                <h1>Login de Usuario</h1>
+                <label for="inp_login_usuario"></label>
+                <p>
+                    <input class="text-input text-input--material" type="text" id="inp_login_usuario"
+                        placeholder="Ingrese usuario" />
+                </p>
+                <label for="inp_login_pwd"></label>
+                <p>
+                    <input class="text-input text-input--material" type="password" id="inp_login_pwd"
+                        placeholder="Ingrese contrase&ntilde;a" />
+                </p>
+                <p>
+                    <ons-button id="btn_login">Ingresar</ons-button>
+                    <ons-button modifier="outline" id="btn_registrar">Registrarse</ons-button>
+                </p>
+            </section>
+        </ons-page>
+
+<!---------------------------------------------------------------------------------------------------->
+    </template>
+    <template id="t_principal">
+        <ons-page id="p_principal">
+            <ons-toolbar>
+                <div class="left">
+                    <ons-toolbar-button icon="fa-bars" onclick="fn.open()"></ons-toolbar-button>
+                </div>
+            </ons-toolbar>
+            <section>
+                <h1 style="text-align: center">Quelotines Inc.</h1>
+                <img style="width: 100%; height: auto; box-shadow: 1px 1px 5px 1px gray;" src="logo.png" />
+                <p id="saludo" style="text-align:right"></p>
+                <br>
+                <p style="text-align: center">
+                    <a id="scooter"><img style="width: 20%; height: auto; margin-right: 15%; box-shadow: 5px 5px 5px 1px gray;" src="scooter.png"></a>
+                    <a id="tarjeta"><img style="width: 20%; height: auto; margin-left: 15%; box-shadow: 5px 5px 5px 1px gray;" src="tarjeta.png"></a>
+                </p>
+                <ons-list id="l_principal"></ons-list>
+            </section>
+            <script>
+                ons.getScriptPage().onInit = function () {
+                    var usuario     = sessionStorage.getItem("usuario_nombre");
+                    //var usu       = JSON.parse(usuario);
+                    //var id        = usu.id;
+                    var id          = sessionStorage.getItem("usuario_id");
+                    
+                    $("#saludo").html("Hola <strong>" + usuario + "</strong>!");
+
+                    $("#tarjeta").on("click", function () {
+                        fn.load('t_billetera', { data: { "usu": usuario, "id": id } });
+                    });
+
+                    $("#scooter").on("click", function () {
+                        fn.load('t_alquiler', { data: { "usu": usuario, "id": id } });
+                    });
+                };
+
+            </script>
+        </ons-page>
+    </template>
+
+<!---------------------------------------------------------------------------------------------------->
+    <template id="t_billetera">
+        <ons-page id="p_billetera">
+            <section>
+                <h1 style="text-align: center">Billetera</h1>
+                <ons-card>
+                    <img src="tarjeta.png" style="width: 100%; height: auto;" id="imagen_tarjeta" />
+                    <div class="title">
+                        <span id="info_nombre"></span> <span id="info_apellido"></span>
+                    </div>
+                    <div class="content" style="text-align: center">
+                        <div style="box-shadow: 5px 5px 5px 1px gray;">
+                            <h4>Informacion de la tarjeta</h3>
+                            <table style="width:100%">
+                                <tr>
+                                    <th>NUMERO</th>
+                                    <th>SALDO</th>
+                                </tr>
+                                <tr>
+                                    <td><p id="nr_tarjeta"></p></td>
+                                    <td><p id="nr_saldo_tarjeta">$ </p></td>
+                                </tr>
+                                </table>
+                            <p>
+                                <ons-button style="margin-bottom: 5px" id="btn_agregar_saldo" data-id="">Agregar saldo</ons-button>
+                            </p>
+                        </div>
+                        <br>
+                        <div style="box-shadow: 5px 5px 5px 1px gray;">
+                            <h3>Tarjeta</h3>
+                            <p>
+                                <ons-button modifier="outline" id="btn_eliminar_tarjeta" data-id="">Eliminar
+                                </ons-button>
+                                <ons-button modifier="outline" id="btn_agregar_tarjeta" data-id="">Agregar
+                                </ons-button>
+                            </p>
+                        </div>
+                    </div>
+                </ons-card>
+            </section>
+            <script>
+                var usuario     = sessionStorage.getItem("usuario_nombre");
+                //var usu       = JSON.parse(usuario);
+                //var id        = usu.id;
+                var id          = sessionStorage.getItem("usuario_id");
+
+                ons.getScriptPage().onShow = function () {
+                    $("#spn_cargando").text("Actualizando saldo ...");
+                    $("#modal_cargando").show();
+
+                    $.ajax({
+                        url: "http://oransh.develotion.com/tarjetas.php",
+                        type: "GET",
+                        dataType: "json",
+                        data: { id: id },
+                        success: function (respuesta) {
+                            var tarjeta = validarTarjetaDeCredito(respuesta.numero);
+                            if(tarjeta){
+                                document.getElementById("imagen_tarjeta").src=tarjeta.img;
+                                $("#nr_tarjeta").text(respuesta.numero);
+                                $("#nr_saldo_tarjeta").html("$ <strong>"+respuesta.saldo+"</strong>");
+                            }
+                        },
+                        complete: function () {
+                            $("#modal_cargando").hide();
+                        }
+                    });
+                };
+
+                ons.getScriptPage().onInit = function () {
+
+                    $(document).on("click", "#btn_agregar_saldo", function () {
+                        var saldo = "";
+
+                        ons.notification.prompt("Escriba el monto:",{title:"ACREDITAR"})
+                        .then(function(input){
+                            saldo = input;
+
+                            if(!(saldo%100)==0){
+                                ons.notification.alert('El saldo debe de ser multiplo de 100!',{title:"ERROR!"});
+                            }
+                            else{
+                                $("#spn_cargando").text("Agregando una tarjeta ...");
+                                $("#modal_cargando").show();
+
+                                $.ajax({
+                                    url: "http://oransh.develotion.com/tarjetas.php",
+                                    type: "PUT",
+                                    data: { id: id, saldo: saldo },
+                                    dataType: "json",
+                                    success: function (respuesta) {
+                                        $("#nr_saldo_tarjeta").html("$ <strong>"+respuesta.saldo+"</strong>");
+                                        ons.notification
+                                        .alert("Se ah acreditado correctamente el saldo!",{title:"EXITO!"})
+                                    },
+                                    complete: function () {
+                                        $("#modal_cargando").hide();
+                                    }
+                                });
+                            }
+                        })
+
+                    });
+
+                    $(document).on("click", "#btn_agregar_tarjeta", function () {
+                        var numero = "";
+
+                        ons.notification.prompt("Numero de la tarjeta:",{title:"AGREGAR TARJETA"})
+                        .then(function(input){
+                            numero = input;
+                            var tarjeta = validarTarjetaDeCredito(numero);
+                            if(!tarjeta){
+                                ons.notification
+                                .alert("Numero de la tarjeta Invalido!",{title:"ERROR!"})
+                            }
+                            else{
+                                $("#spn_cargando").text("Agregando una tarjeta ...");
+                                $("#modal_cargando").show();
+
+                                $.ajax({
+                                    url: "http://oransh.develotion.com/tarjetas.php",
+                                    type: "POST",
+                                    data: { id: id, numero: numero },
+                                    dataType: "json",
+                                    success: function (respuesta) {
+                                        document.getElementById("imagen_tarjeta").src=tarjeta.img;
+                                        $("#nr_tarjeta").text(numero);
+                                        $("#nr_saldo_tarjeta").html("$ <strong>"+respuesta.saldo+"</strong>");
+                                        ons.notification
+                                        .alert("Se ah agregado correctamente la tarjeta!",{title:"EXITO!"})
+                                    },
+                                    complete: function () {
+                                        $("#modal_cargando").hide();
+                                    }
+                                });
+                            }
+                        })
+
+                    });
+
+                    $(document).on("click", "#btn_eliminar_tarjeta", function () {
+                        
+                        if (! usuandoMonopatin){
+                            ons.notification
+                                .confirm("¿Confirma que desea eliminar la tarjeta?", {
+                                    buttonLabels: ["SI", "NO"],
+                                    title: "Eliminar Tarjeta"
+                                })
+                                .then(function (respuesta) {
+                                    if (respuesta == 0) {
+                                        $("#spn_cargando").text("Eliminando su tarjeta...");
+                                        $("#modal_cargando").show();
+                                        $.ajax({
+                                            url: "http://oransh.develotion.com/tarjetas.php",
+                                            type: "DELETE",
+                                            data: { id: id },
+                                            dataType: "json",
+                                            success: function () {
+                                                document.getElementById("imagen_tarjeta").src="tarjeta.png";
+                                                $("#nr_tarjeta").text("");
+                                                $("#nr_saldo_tarjeta").html("$ -");
+                                                ons.notification
+                                                .alert("Se ah eliminado correctamente la tarjeta!",{title:"EXITO!"})
+                                            },
+                                            complete: function () {
+                                                $("#modal_cargando").hide();
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            else{
+                                ons.notification
+                                .alert("No puede eliminar la tarjeta, estas usando un monopatin!",{title:"ERROR!"})
+                            }
+                    });
+                };
+            </script>
+        </ons-page>
+    </template>
+
+    <!---------------------------------------------------------------------------------------------------->
+    <template id="t_alquiler">
+        <ons-page id="p_alquiler">
+            <section style="text-align: center">
+                <h1>Selecciona el Monopatin</h1>
+                <ons-card>
+                    <div class="map-responsive">
+                        <div id="mapid"></div>
+                    </div>
+                </ons-card>
+            </section>
+            <script>
+                ons.getScriptPage().onInit = function () {
+                    mymap = L.map('mapid').setView([-34.911111, -56.164532], 13);
+                }
+
+                ons.getScriptPage().onShow = function () {
+                    try{   
+                        //document.getElementById('mapid').innerHTML = "<div id='mapid' ></div>";
+                
+                        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+                            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                            maxZoom: 18,
+                            id: 'mapbox.streets',
+                            accessToken: 'pk.eyJ1IjoibG9yZHRpYXMiLCJhIjoiY2p5aHk4dzgxMDRxdjNuanhkZHlydXhqbSJ9.4lLFkbGTNbtNUbXca3FP-w'
+                        }).addTo(mymap);
+
+                        var marker = L.marker([-34.911111, -56.164532]).addTo(mymap);
+                        var latitud = -34.911111;
+                        var longitud = -56.164532;
+
+                        cargarMonopatines(latitud,longitud,mymap);
+                    }
+                    catch(e){
+                        console.log("Hola: "+e.message);
+                    }
+                };
+            </script>
+        </ons-page>
+    </template>
+
+    <template id="t_scooter">
+        <ons-page id="p_scooter">
+            <section style="text-align: center">
+                <h1>ALQUILER</h1>
+                <ons-card>
+                    <h2>Datos del Monopatin</h2>
+                    <table style="width:100%">
+                        <tr>
+                            <th style="text-align: center">BATERIA</th>
+                            <th style="text-align: center">CODIGO</th>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center"><p id="bateria_mono"></p></td>
+                            <td style="text-align: center"><p id="codigo_mono"></p></td>
+                        </tr>
+                    </table>
+
+                    <p style="text-align: center">
+                        <ons-button id="btn_alquilar" data-id="">Alquilar monopatin
+                        </ons-button>
+                    </p>
+                </ons-card>
+                <ons-card id="factura" style="display: none">
+                    <h2>Importe final</h2>
+                    <label for="f_ini">Inicio del Viaje</label>
+                    <p id="f_ini" style="text-align: center"></p>
+                    <label for="f_fin">Final del Viaje</label>
+                    <p id="f_fin" style="text-align: center"></p>
+                    <label for="t_costo">Costo</label>
+                    <table id="t_costo" style="width:100%">
+                        <tr>
+                            <th style="text-align: center">Duracion</th>
+                            <th style="text-align: center">Costo total</th>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center"><p id="duracion_viaje"></p></td>
+                            <td style="text-align: center"><p id="costo_viaje"></p></td>
+                        </tr>
+                    </table>
+                </ons-card>
+                <p style="text-align: center">
+                    <ons-button id="btn_salir" onclick="fn.load('t_alquiler')">Salir
+                    </ons-button>  
+                </p>
+            </section>
+            <script>
+                var usuario     = sessionStorage.getItem("usuario_nombre");
+                //var usu       = JSON.parse(usuario);
+                //var id        = usu.id;
+                var id          = sessionStorage.getItem("usuario_id");
+
+                ons.getScriptPage().onInit = function () {
+                    $('#bateria_mono').text(this.data.mono.bateria);
+                    $('#codigo_mono').text(this.data.mono.codigo);
+
+                    $('#btn_alquilar').on('click',function(){
+                       // $("#modal_validando").show();
+                        if(validarSaldo(id) == true){
+                      //      $("#modal_validando").hide();
+                        
+                            $("#modal_alquilando").show();
+                        $('#f_ini').html(getTime('Inicio'))
+                    }else{
+                       // $("#modal_validando").hide();
+                        
+                        ons.notification.alert('Saldo insuficiente. Debe realizar una recarga para continuar',{title:"Saldo Insuficiente!"});
+                    }
+                    });
+
+                    $('#btn_terminar_viaje').on('click',function(){
+                        $("#modal_alquilando").hide();
+                        document.getElementById("factura").style.display="";
+                        $('#f_fin').html(getTime('Fin'))
+                        $('#duracion_viaje').text(getDuracion())
+                        $('#costo_viaje').html("$ <strong>"+getCosto(getDuracion())+"</strong>")
+                    });
+
+                }
+                ons.getScriptPage().onShow = function () {
+                    document.getElementById("factura").style.display="none";
+                    $('#bateria_mono').text(this.data.mono.bateria);
+                    $('#codigo_mono').text(this.data.mono.codigo);
+                }
+            </script>
+        </ons-page>
+    </template>
+
+</body>
+
+
+
+<template id="dialog.html">
+
+    <ons-dialog id="my-dialog" cancelable>
+        <div style="text-align: left; padding: 10px;">
+            <p>
+                <ons-select select-id="mensajeUsuario">
+                    <option value="-1">
+                        Seleccione un usuario
+                    </option>
+                </ons-select>
+            </p>
+
+            <p><input type="text" name="" id="mensajeHtml" placeholder="Ingrese un mensaje"
+                    class="text-input text-input--material"></p>
+            <p>
+                <ons-button style="width:98%" onclick="enviarMensaje()">Enviar</ons-button>
+            </p>
+        </div>
+    </ons-dialog>
+
+</template>
+
+</html>
